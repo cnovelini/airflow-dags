@@ -1,12 +1,12 @@
 import re
 
-import pytest
-from pytest import mark
+from pytest import mark, raises
 
-from domain.exceptions.runtime_exceptions import PathNotFoundError
+from domain.exceptions.runtime_exceptions import PathConstructionError, PathNotFoundError
 from domain.interfaces.credential_management import ICredentialManager
 from domain.interfaces.logging import ILogger
 from helpers.file_path_manager import FilePathManager
+from tests.assets.mocks.non_stringable_object import NonStringableObject
 
 
 @mark.file_path_manager
@@ -52,5 +52,9 @@ class FilePathManagerTests:
     def test_file_path_manager_recover_nonexistent_path(
         self, file_path_manager: FilePathManager, dev_credential_manager: ICredentialManager
     ):
-        with pytest.raises(PathNotFoundError):
+        with raises(PathNotFoundError):
             file_path_manager.recover_last_path(dev_credential_manager.get("CUPROD_DUMP_FILE"))
+
+    def test_path_generation_name_error_protection(self, file_path_manager: FilePathManager):
+        with raises(PathConstructionError):
+            file_path_manager.build_new_path(NonStringableObject())

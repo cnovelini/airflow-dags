@@ -39,7 +39,7 @@ class FilePathManager:
 
         except Exception as path_err:
             error_message = f"{type(path_err).__name__} -> {path_err}"
-            self.logger.error(f"Failed to build new path for {target_file_name}: {error_message}")
+            self.logger.error(f"Failed to build new path: {error_message}")
             raise PathConstructionError(error_message)
 
     def recover_last_path(self, target_file_name: str) -> str:
