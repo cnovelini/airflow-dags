@@ -1,6 +1,3 @@
-from unittest import mock
-
-import boto3
 from botocore.stub import ANY, Stubber
 from pandas import DataFrame
 from pytest import mark
@@ -25,17 +22,15 @@ class S3ConnectorTests:
         assert s3_connector.access_key_id == dev_credential_manager.get("AWS_ACCESS_KEY_ID")
         assert s3_connector.secret_access_key_id == dev_credential_manager.get("AWS_SECRET_ACCESS_KEY")
 
-    @mock.patch(
-        "infrastructure.connections.s3_connector.S3Connector.get_connection", side_effect=Stubber(boto3.client("s3"))
-    )
     def test_s3_connection_file_read(
         self,
         s3_connector: S3Connector,
-        dataframe_mock: DataFrame,
+        clean_dataframe_mock: DataFrame,
         file_download_mock: dict,
         dev_credential_manager: ICredentialManager,
     ):
-        s3_stub = s3_connector.get_connection()
+
+        s3_stub = Stubber(s3_connector.get_connection())
         s3_stub.add_response(
             "get_object",
             file_download_mock,
@@ -48,11 +43,8 @@ class S3ConnectorTests:
 
         read_df = s3_connector.read_file_as_df(dev_credential_manager.get("CUPROD_CLEAN_FILE"))
 
-        assert read_df.equals(dataframe_mock)
+        assert read_df.equals(clean_dataframe_mock)
 
-    @mock.patch(
-        "infrastructure.connections.s3_connector.S3Connector.get_connection", side_effect=Stubber(boto3.client("s3"))
-    )
     def test_s3_connection_file_upload(
         self,
         s3_connector: S3Connector,
@@ -60,7 +52,8 @@ class S3ConnectorTests:
         file_upload_mock: dict,
         dev_credential_manager: ICredentialManager,
     ):
-        s3_stub = s3_connector.get_connection()
+
+        s3_stub = Stubber(s3_connector.get_connection())
         s3_stub.add_response(
             "put_object",
             file_upload_mock,
@@ -72,8 +65,5 @@ class S3ConnectorTests:
         )
         s3_stub.activate()
 
-        try:
-            s3_connector.save_as_csv(dataframe_mock, dev_credential_manager.get("CUPROD_DUMP_FILE"))
-            assert True
-        except Exception:
-            assert False
+        s3_connector.save_as_csv(dataframe_mock, dev_credential_manager.get("CUPROD_DUMP_FILE"))
+        assert True

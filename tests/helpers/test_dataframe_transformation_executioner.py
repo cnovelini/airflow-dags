@@ -1,6 +1,5 @@
-import pytest
 from pandas import DataFrame
-from pytest import mark
+from pytest import mark, raises
 
 from domain.exceptions.runtime_exceptions import TransformationExecutionError
 from domain.interfaces.information_transformation import TransformationExecutioner
@@ -57,5 +56,5 @@ class DataFrameTransformationExecutionerTests:
     ):
         df_transf_executioner.known_transformers.append(EnforcedFailureTransformer)
 
-        with pytest.raises(TransformationExecutionError):
+        with raises(TransformationExecutionError):
             df_transf_executioner.transform(dataframe_mock)

@@ -1,12 +1,11 @@
-from unittest import mock
-
-import pytest
 from pandas import DataFrame
-from pytest import mark
+from pytest import mark, raises
+from pytest_mock import MockerFixture
 
 from domain.exceptions.runtime_exceptions import DataFrameStringStripError
 from domain.interfaces.information_transformation import ITransformer
 from helpers.transformers.dataframe_string_transformer import DataFrameStringTransformer
+from tests.assets.patchers.pandas_dataframe_patcher import PandasDataframePatcher
 
 
 @mark.dataframe_string_transformer
@@ -34,9 +33,12 @@ class DataFrameStringTransformerTests:
         dataframe_mock = df_string_transformer.transform(dataframe_mock)
         assert dataframe_mock.equals(clean_dataframe_mock)
 
-    @mock.patch("pandas.DataFrame.applymap", side_effect=ValueError("Failed to parse"))
     def test_dataframe_string_transformer_transformation_error(
-        self, df_string_transformer: DataFrameStringTransformer, dataframe_mock: DataFrame
+        self, mocker: MockerFixture, df_string_transformer: DataFrameStringTransformer, dataframe_mock: DataFrame
     ):
-        with pytest.raises(DataFrameStringStripError):
+
+        patcher = PandasDataframePatcher(mocker)
+        patcher.patch_method_side_effect("applymap", ValueError("Failed to parse"))
+
+        with raises(DataFrameStringStripError):
             df_string_transformer.transform(dataframe_mock)
