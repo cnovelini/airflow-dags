@@ -234,37 +234,35 @@ def s3_to_stage():
 
 
 # Operators declaration
-
-test_env_var
 test_env_var = PythonOperator(
     task_id='test_env_var',
     python_callable=test_env_var,
     dag=dag,
 )
 
-s3_dump = PythonOperator(
-    task_id='as400_to_S3',
-    python_callable=as400_to_S3,
-    dag=dag,
-)
+# s3_dump = PythonOperator(
+#     task_id='as400_to_S3',
+#     python_callable=as400_to_S3,
+#     dag=dag,
+# )
 
-s3_clean = PythonOperator(
-    task_id='S3_cleanup',
-    python_callable=S3_cleanup,
-    dag=dag,
-)
+# s3_clean = PythonOperator(
+#     task_id='S3_cleanup',
+#     python_callable=S3_cleanup,
+#     dag=dag,
+# )
 
-to_stage = PythonOperator(
-    task_id='S3_to_stage',
-    python_callable=s3_to_stage,
-    dag=dag,
-)
+# to_stage = PythonOperator(
+#     task_id='S3_to_stage',
+#     python_callable=s3_to_stage,
+#     dag=dag,
+# )
 
-sql_structure = PythonOperator(
-    task_id='handle_schema_data_drop',
-    python_callable=create_sql,
-    dag=dag,
-)
+# sql_structure = PythonOperator(
+#     task_id='handle_schema_data_drop',
+#     python_callable=create_sql,
+#     dag=dag,
+# )
 
 # DAG sequence
 # sql_structure >> s3_dump >> s3_clean >> to_stage
