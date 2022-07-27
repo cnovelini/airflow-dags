@@ -15,6 +15,7 @@ from as400.as400 import AS400Connector
 import io
 import boto3
 from datetime import datetime
+import os
 
 #Global variables
 s3_client = boto3.client(
