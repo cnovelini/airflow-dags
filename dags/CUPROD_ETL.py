@@ -58,6 +58,17 @@ dag = DAG(
     schedule_interval=None,
 )
 
+
+def test_env_var():
+    testing_var = 'FAIL'
+    try:
+        testing_var = os.getenv('testing-var')
+    except Exception as e:
+        print(e)
+        print("Testing var not found")
+    
+    print(testing_var)
+
 def df_cleanup(df):
     """Clean up input dataframe
 
@@ -222,6 +233,14 @@ def s3_to_stage():
 
 
 # Operators declaration
+
+test_env_var
+test_env_var = PythonOperator(
+    task_id='test_env_var',
+    python_callable=test_env_var,
+    dag=dag,
+)
+
 s3_dump = PythonOperator(
     task_id='as400_to_S3',
     python_callable=as400_to_S3,
@@ -247,4 +266,5 @@ sql_structure = PythonOperator(
 )
 
 # DAG sequence
-sql_structure >> s3_dump >> s3_clean >> to_stage
+# sql_structure >> s3_dump >> s3_clean >> to_stage
+test_env_var
