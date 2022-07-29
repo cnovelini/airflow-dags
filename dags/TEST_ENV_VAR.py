@@ -65,10 +65,10 @@ test_env_var = PythonOperator(
     dag=dag,
 )
 
-force_fail_env_var = PythonOperator(
-    task_id="force_fail_env_var",
-    python_callable=force_fail_env_var,
-    dag=dag,
-)
+# force_fail_env_var = PythonOperator(
+#     task_id="force_fail_env_var",
+#     python_callable=force_fail_env_var,
+#     dag=dag,
+# )
 
 test_env_var
