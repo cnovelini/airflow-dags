@@ -71,4 +71,4 @@ force_fail_env_var = PythonOperator(
     dag=dag,
 )
 
-[test_env_var, force_fail_env_var]
+test_env_var
