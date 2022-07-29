@@ -17,11 +17,11 @@ import boto3
 from datetime import datetime
 import os
 
-#Global variables
+# Global variables
 s3_client = boto3.client(
     "s3",
     aws_access_key_id=Variable.get("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=Variable.get("AWS_SECRET_ACCESS_KEY")
+    aws_secret_access_key=Variable.get("AWS_SECRET_ACCESS_KEY"),
 )
 
 # Connect into staging
@@ -30,7 +30,11 @@ try:
     stage_developer_hostname = Variable.get("stage_developer_hostname")
     stage_developer_username = Variable.get("stage_developer_username")
     stage_developer_password = Variable.get("stage_developer_password")
-    stage_engine = create_engine(f"postgresql+psycopg2://{stage_developer_username}:{stage_developer_password}@{stage_developer_hostname}:5432/stage_developer", pool_size=5, pool_recycle=3600)
+    stage_engine = create_engine(
+        f"postgresql+psycopg2://{stage_developer_username}:{stage_developer_password}@{stage_developer_hostname}:5432/stage_developer",
+        pool_size=5,
+        pool_recycle=3600,
+    )
 except Exception as e:
     print(e)
     raise AirflowException("Failed to connect to database engine")
@@ -41,34 +45,35 @@ timestamp = f"{timestamp_str[0]}_{timestamp_str[1]}"
 
 # Defining main DAG's config
 default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'start_date': datetime(2022, 5, 10),
-    'email': ['novelini@c9apps.com.br'],
-    'email_on_failure': True,
-    'email_on_retry': False,
-    'retries': 0,
-    'retry_delay': timedelta(minutes=5)
+    "owner": "airflow",
+    "depends_on_past": False,
+    "start_date": datetime(2022, 5, 10),
+    "email": ["novelini@c9apps.com.br"],
+    "email_on_failure": True,
+    "email_on_retry": False,
+    "retries": 0,
+    "retry_delay": timedelta(minutes=5),
 }
 
 # Dag declaration
 dag = DAG(
-    'CUPROD_ETL',
+    "CUPROD_ETL",
     default_args=default_args,
-    description='Fetch data from CUPROD - AS400 and dumps into S3 -> STAGE',
+    description="Fetch data from CUPROD - AS400 and dumps into S3 -> STAGE",
     schedule_interval=None,
 )
 
 
 def test_env_var():
-    testing_var = 'FAIL'
+    testing_var = "FAIL"
     try:
-        testing_var = os.getenv('testing-var')
+        testing_var = os.getenv("testing-var")
     except Exception as e:
         print(e)
         print("Testing var not found")
-    
+
     print(testing_var)
+
 
 def df_cleanup(df):
     """Clean up input dataframe
@@ -96,7 +101,7 @@ def create_sql():
         AirflowException: _description_
     """
 
-    #Create STAGE connection
+    # Create STAGE connection
     try:
         conn = stage_engine.connect()
     except Exception as e:
@@ -104,7 +109,7 @@ def create_sql():
         raise AirflowException("Failed to connect to STAGE")
 
     # Drop CUPROD STAGE if it exists
-    print('Dropping CUPROD - STAGE...')
+    print("Dropping CUPROD - STAGE...")
     try:
         conn.execute(text("DROP TABLE IF EXISTS cuprod_stage_dev"))
     except Exception as e:
@@ -157,7 +162,9 @@ def as400_to_S3():
             response.to_csv(csv_buffer, index=False)
 
             result = s3_client.put_object(
-                Bucket=AWS_S3_BUCKET, Key=f"files/CUPROD_DUMP.csv", Body=csv_buffer.getvalue()
+                Bucket=AWS_S3_BUCKET,
+                Key=f"files/CUPROD_DUMP.csv",
+                Body=csv_buffer.getvalue(),
             )
     except Exception as e:
         print(e)
@@ -165,34 +172,37 @@ def as400_to_S3():
 
 
 def S3_cleanup():
-    """Cleanup S3 Data
-    """
+    """Cleanup S3 Data"""
 
     # S3 Bucket Name
     AWS_S3_BUCKET = "coh-dump"
 
-    #Retreive file from S3
-    print('Retrieving Dump File...')
+    # Retreive file from S3
+    print("Retrieving Dump File...")
     try:
-        s3_dump_file = s3_client.get_object(Bucket=AWS_S3_BUCKET, Key=f"files/CUPROD_DUMP.csv")
+        s3_dump_file = s3_client.get_object(
+            Bucket=AWS_S3_BUCKET, Key=f"files/CUPROD_DUMP.csv"
+        )
     except Exception as e:
         print(e)
-        raise AirflowException("Failed retrieve S3 file") 
+        raise AirflowException("Failed retrieve S3 file")
 
     # Transform CSV into Pandas Dataframe
     df = pd.read_csv(s3_dump_file.get("Body"))
 
     # Cleanup data
-    print('Applying cleanup...')
+    print("Applying cleanup...")
     df = df_cleanup(df)
 
     # Save into S3
-    print('Saving into S3')
+    print("Saving into S3")
     with io.StringIO() as csv_buffer:
         df.to_csv(csv_buffer, index=False)
 
         result = s3_client.put_object(
-            Bucket=AWS_S3_BUCKET, Key=f"files/CUPROD_CLEAN.csv", Body=csv_buffer.getvalue()
+            Bucket=AWS_S3_BUCKET,
+            Key=f"files/CUPROD_CLEAN.csv",
+            Body=csv_buffer.getvalue(),
         )
 
 
@@ -204,38 +214,40 @@ def s3_to_stage():
         AirflowException: _description_
     """
 
-    #Create STAGE connection
+    # Create STAGE connection
     try:
         conn = stage_engine.connect()
     except Exception as e:
         print(e)
         raise AirflowException("Failed to connect to STAGE")
-    
+
     # S3 Bucket Name
     AWS_S3_BUCKET = "coh-dump"
 
-    #Retreive file from S3
-    print('Retrieving Dump File...')
-    s3_dump_file = s3_client.get_object(Bucket=AWS_S3_BUCKET, Key=f"files/CUPROD_CLEAN.csv")
+    # Retreive file from S3
+    print("Retrieving Dump File...")
+    s3_dump_file = s3_client.get_object(
+        Bucket=AWS_S3_BUCKET, Key=f"files/CUPROD_CLEAN.csv"
+    )
 
     # Transform CSV into Pandas Dataframe
     df = pd.read_csv(s3_dump_file.get("Body"))
 
     # Writing file into STAGE
-    print('Writing to stage...')
+    print("Writing to stage...")
     try:
-        df.to_sql('cuprod_stage_dev',stage_engine, if_exists = 'replace')
+        df.to_sql("cuprod_stage_dev", stage_engine, if_exists="replace")
     except Exception as e:
         print(e)
         conn.close()
         raise AirflowException("Failed to insert data into STAGE")
-    
+
     conn.close()
 
 
 # Operators declaration
 test_env_var = PythonOperator(
-    task_id='test_env_var',
+    task_id="test_env_var",
     python_callable=test_env_var,
     dag=dag,
 )
