@@ -1,4 +1,4 @@
-"""CUPROD AS400 ETL DAG Definition Module."""
+"""RAZAC SHIPDATE ETL DAG Definition Module."""
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
