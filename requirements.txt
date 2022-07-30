@@ -86,7 +86,7 @@ pluggy==1.0.0
 pre-commit==2.20.0
 prison==0.2.1
 psutil==5.9.1
-psycopg2==2.9.3
+psycopg2-binary==3.0.15
 py==1.11.0
 pycodestyle==2.8.0
 pycparser==2.21

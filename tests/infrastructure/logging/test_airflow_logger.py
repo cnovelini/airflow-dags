@@ -30,7 +30,7 @@ class AirflowLoggerTests:
             airflow_logger.error("ERROR TEST")
 
         assert len(caplog.records) == 4
-        assert all([record.name == dev_credential_manager.get("AIRFLOW_LOGGER_NAME") for record in caplog.records])
+        assert all([record.name == dev_credential_manager.get("logger_name") for record in caplog.records])
 
         recorded_levels = [record.levelno for record in caplog.records]
         expected_levels = [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR]
