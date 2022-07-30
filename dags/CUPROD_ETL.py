@@ -6,7 +6,7 @@ from operators.as400_to_s3_operator import AS400ToS3Operator
 from operators.s3_dataframe_cleanup_operator import S3DataframeCleanupOperator
 from operators.s3_to_sql_database_operator import S3ToSqlDatabaseOperator
 from operators.sql_table_reconstruct_operator import SqlTableReconstructOperator
-from domain.constants.queries.as400_queries import SELECT_FROM_CUPROD_LIMIT_100
+from domain.constants.queries.as400_queries import SELECT_FROM_CUPROD
 from domain.data.coh.tables.cuprod.struct import CUPROD_COLUMNS, CUPROD_TABLE_STRUCTURE
 from domain.enumerations.environment import Environment
 from domain.enumerations.profile import Profile
@@ -61,7 +61,7 @@ with DAG(
         logger=logger,
         as400=as_400,
         s3=s3,
-        query=SELECT_FROM_CUPROD_LIMIT_100.format(CUPROD_COLUMNS),
+        query=SELECT_FROM_CUPROD.format(CUPROD_COLUMNS),
         target_s3_path=path_manager.build_new_path(profile.get("CUPROD_DUMP_FILE")),
         task_id="as400_to_s3",
         dag=dag,
@@ -83,7 +83,7 @@ with DAG(
         database_client=postgres,
         s3_file_path=path_manager.recover_last_path(profile.get("CUPROD_CLEAN_FILE")),
         target_table_name=profile.get("CUPROD_TABLE"),
-        task_id="S3_to_sql_database",
+        task_id="s3_to_sql_database",
         dag=dag,
     )
 
