@@ -14,9 +14,9 @@ class AS400Connector(IDatabaseConnector):
     """AS400 connection class."""
 
     def __init__(self, credential_manager: ICredentialManager, logger: ILogger):
-        self.host = credential_manager.get_host()
-        self.username = credential_manager.get_user()
-        self.password = credential_manager.get_pass()
+        self.host = credential_manager.get("coh_hostname")
+        self.username = credential_manager.get("coh_username")
+        self.password = credential_manager.get("coh_password")
         self.logger = logger
 
     def __connection_string(
