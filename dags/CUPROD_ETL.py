@@ -20,7 +20,7 @@ from infrastructure.logging.airflow_logger import AirflowLogger
 
 
 # Global variables (action executioners)
-profile = ProfileManager.get_profile(Profile.PROFILE_001, Environment.DEV)
+profile = ProfileManager.get_profile(Profile.PROFILE_001, Environment.STAGE)
 logger = AirflowLogger(profile)
 as_400 = AS400Connector(profile, logger)
 s3 = S3Connector(profile, logger)
