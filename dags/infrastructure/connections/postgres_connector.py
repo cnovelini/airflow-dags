@@ -86,6 +86,7 @@ class PostgresConnector(SQLConnector):
 
     def insert_dataframe(
         self,
+        session: Session,
         information: DataFrame,
         target_table: str,
         insertion_method: DbInsertionMethod = DbInsertionMethod.PD_TO_SQL,
@@ -112,7 +113,7 @@ class PostgresConnector(SQLConnector):
         """
         try:
             self.logger.info("Starting Postgres insertion...")
-            self.insertion_routines[insertion_method](information, target_table)
+            self.insertion_routines[insertion_method](session, information, target_table)
             self.logger.info("Postgres insertion executed with success!")
 
         except KeyError:
