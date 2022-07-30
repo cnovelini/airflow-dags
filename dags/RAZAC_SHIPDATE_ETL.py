@@ -1,5 +1,7 @@
 """RAZAC SHIPDATE ETL DAG Definition Module."""
 from airflow import DAG
+from airflow.decorators import task
+from airflow.exceptions import AirflowException
 from airflow.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
@@ -35,6 +37,12 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
+
+@task(trigger_rule=TriggerRule.ONE_FAILED)
+def dag_end_failure_control():
+    raise AirflowException("Failing task because one or more upstream tasks failed.")
+
+
 # Dag declaration
 with DAG(
     "RAZAC_SHIPDATE_ETL",
@@ -56,9 +64,5 @@ with DAG(
         dag=dag,
     )
 
-    dag_end_failure_control = BashOperator(
-        bash_command="echo etl failure control", task_id="dag_end_failure_control", trigger_rule=TriggerRule.ONE_FAILED
-    )
-
     dag_start_control >> s3_to_stage >> stage_to_dw >> dag_end_success_control
-    list(dag.tasks) >> dag_end_failure_control
+    list(dag.tasks) >> dag_end_failure_control()
