@@ -44,7 +44,6 @@ class SQLConnector(IDatabaseConnector):
     @abstractmethod
     def insert_dataframe(
         self,
-        session: Session,
         information: DataFrame,
         target_table: str,
         insertion_method: DbInsertionMethod = DbInsertionMethod.PD_TO_SQL,

@@ -32,5 +32,5 @@ class S3ToSqlDatabaseOperator(BaseOperator):
         clean_table_df = self.s3.read_file_as_df(self.s3_file_path)
 
         # Inserting table on target SQL database
-        with self.database_client.session_scope() as session:
-            self.database_client.insert_dataframe(session, clean_table_df, target_table=self.target_table_name)
+        with self.database_client.session_scope():
+            self.database_client.insert_dataframe(clean_table_df, target_table=self.target_table_name)

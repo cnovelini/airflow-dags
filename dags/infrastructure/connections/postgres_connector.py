@@ -3,6 +3,7 @@ from typing import Any
 from pandas import DataFrame
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from sqlalchemy.engine import Engine
 
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.constants.queries.postgres_queries import CREATE_TABLE, DROP_TABLE
@@ -20,14 +21,19 @@ from domain.interfaces.logging import ILogger
 class PostgresConnector(SQLConnector):
     """Postgres database connection class."""
 
+    engine: Engine
+
     def __init__(self, credential_manager: ICredentialManager, logger: ILogger):
         self.connection_string = credential_manager.generate_sqlalchemy_connection_string()
         self.logger = logger
+        self.engine = None
 
         self.insertion_routines = {DbInsertionMethod.PD_TO_SQL: self.__pd_to_sql_insertion}
 
     def get_connection(self) -> Any:
-        return create_engine(self.connection_string, pool_size=5, pool_recycle=3600)
+        if not self.engine:
+            self.engine = create_engine(self.connection_string, pool_size=5, pool_recycle=3600)
+        return self.engine
 
     def drop_table(self, session: Session, target_table: str) -> None:
         """Executes a DROP command on informed target table.
@@ -80,7 +86,6 @@ class PostgresConnector(SQLConnector):
 
     def insert_dataframe(
         self,
-        session: Session,
         information: DataFrame,
         target_table: str,
         insertion_method: DbInsertionMethod = DbInsertionMethod.PD_TO_SQL,
@@ -107,7 +112,7 @@ class PostgresConnector(SQLConnector):
         """
         try:
             self.logger.info("Starting Postgres insertion...")
-            self.insertion_routines[insertion_method](session, information, target_table)
+            self.insertion_routines[insertion_method](information, target_table)
             self.logger.info("Postgres insertion executed with success!")
 
         except KeyError:
@@ -120,7 +125,7 @@ class PostgresConnector(SQLConnector):
             self.logger.error(f"Error during Postgres insertion: {error_message}")
             raise DbInsertionError(error_message)
 
-    def __pd_to_sql_insertion(self, session: Session, information: DataFrame, target_table: str):
+    def __pd_to_sql_insertion(self, information: DataFrame, target_table: str):
         """ "Executes INSERT command using Pandas to_sql interface."""
         self.logger.info("Executing pandas to_sql insertion method")
-        information.to_sql(target_table, session, if_exists="replace")
+        information.to_sql(target_table, self.get_connection(), if_exists="replace")
