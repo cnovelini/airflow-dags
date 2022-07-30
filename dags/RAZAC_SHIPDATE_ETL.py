@@ -53,7 +53,7 @@ with DAG(
 
     dag_start_control = BashOperator(bash_command="echo starting controls", task_id="dag_start_control", dag=dag)
 
-    s3_to_stage = BashOperator(bash_command="echo s3 to stage", task_id="s3_to_stage", dag=dag)
+    s3_to_stage = BashOperator(bash_command="exit 1", task_id="s3_to_stage", dag=dag)
 
     stage_to_dw = BashOperator(bash_command="echo stage to dw", task_id="stage_to_dw", dag=dag)
 
