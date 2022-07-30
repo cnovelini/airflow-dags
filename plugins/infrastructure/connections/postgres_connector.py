@@ -1,25 +1,23 @@
-from contextlib import contextmanager
 from typing import Any
 
 from pandas import DataFrame
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from domain.abstractions.sql_database_connection import SQLConnector
 from domain.constants.queries.postgres_queries import CREATE_TABLE, DROP_TABLE
 from domain.enumerations.database_insertion_method import DbInsertionMethod
 from domain.exceptions.runtime_exceptions import (
     DbCreationError,
     DbDropError,
     DbInsertionError,
-    PostgresDbError,
     UnknownInsertionMethodError,
 )
 from domain.interfaces.credential_management import ICredentialManager
-from domain.interfaces.database_connection import IDatabaseConnector
 from domain.interfaces.logging import ILogger
 
 
-class PostgresConnector(IDatabaseConnector):
+class PostgresConnector(SQLConnector):
     """Postgres database connection class."""
 
     def __init__(self, credential_manager: ICredentialManager, logger: ILogger):
@@ -29,32 +27,7 @@ class PostgresConnector(IDatabaseConnector):
         self.insertion_routines = {DbInsertionMethod.PD_TO_SQL: self.__pd_to_sql_insertion}
 
     def get_connection(self) -> Any:
-        return create_engine(
-            self.connection_string,
-            pool_size=5,
-            pool_recycle=3600,
-        )
-
-    @contextmanager
-    def session_scope(self):
-        """Generates a database session context.
-
-        Returns:
-            session: (sqlalchemy.Session)
-                The database session
-
-        Raises:
-            PostgresDbError: Raised when any database operation error occurs
-        """
-        session = Session(self.get_connection())
-        try:
-            yield session
-            session.commit()
-        except Exception as pg_err:
-            session.rollback()
-            raise PostgresDbError(f"{type(pg_err).__name__} -> {pg_err}")
-        finally:
-            session.close()
+        return create_engine(self.connection_string, pool_size=5, pool_recycle=3600)
 
     def drop_table(self, session: Session, target_table: str) -> None:
         """Executes a DROP command on informed target table.
@@ -105,7 +78,7 @@ class PostgresConnector(IDatabaseConnector):
             self.logger.error(f"Error during Postgres table creation: {error_message}")
             raise DbCreationError(error_message)
 
-    def insert(
+    def insert_dataframe(
         self,
         session: Session,
         information: DataFrame,

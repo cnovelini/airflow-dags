@@ -9,8 +9,7 @@ from helpers.dataframe_transformation_executioner import DataFrameTransformation
 from helpers.file_path_manager import FilePathManager
 from helpers.profile_manager import ProfileManager
 from helpers.transformers.dataframe_string_transformer import DataFrameStringTransformer
-from infrastructure.connections.s3_connector import S3Connector
-from infrastructure.credentials.test_credential_manager import TestCredentialManager
+from tests.assets.local_credential_manager import LocalCredentialManager
 from infrastructure.logging.airflow_logger import AirflowLogger
 
 
@@ -21,17 +20,12 @@ def dev_environment() -> Iterator[Environment]:
 
 @fixture
 def dev_credential_manager(dev_environment: Environment) -> Iterator[ICredentialManager]:
-    yield TestCredentialManager(dev_environment)
+    yield LocalCredentialManager(dev_environment)
 
 
 @fixture
 def airflow_logger(dev_credential_manager: ICredentialManager) -> Iterator[AirflowLogger]:
     yield AirflowLogger(dev_credential_manager)
-
-
-@fixture
-def s3_connector(airflow_logger: ILogger, dev_credential_manager: ICredentialManager) -> Iterator[S3Connector]:
-    yield S3Connector(dev_credential_manager, airflow_logger)
 
 
 @fixture

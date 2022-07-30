@@ -1,0 +1,8 @@
+FROM ibmcom/db2:latest
+
+RUN mkdir /var/custom
+
+COPY tests/assets/database/create_as400_schema.sh /var/custom
+COPY tests/assets/database/sql/as400_create_cuprod_table.sql /var/custom
+
+RUN chmod a+x /var/custom/create_as400_schema.sh

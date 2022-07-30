@@ -26,7 +26,7 @@ class AS400Connector(IDatabaseConnector):
 
         Parameters:
             host: (str)
-                The AS400 server url
+                The AS400 server URL
 
             username: (str)
                 The username credential
@@ -80,13 +80,13 @@ class AS400Connector(IDatabaseConnector):
             As400QueryExecutionError: Any error during query execution
         """
         try:
-            self.logger.info(">" * 30, "Initializing as400 Query", "<" * 30, sep="")
+            self.logger.info(f'{">" * 30} Initializing as400 Query {"<" * 30}')
             result = read_sql(expression, self.get_connection())
-            self.logger.info(">" * 30, "End as400 Query", "<" * 30, sep="")
+            self.logger.info(f'{">" * 30} End as400 Query {" <" * 30}')
 
         except Exception as err:
             error_message = f"{type(err).__name__} -> {err}"
-            self.logger.error("*" * 30, "Error during as400 Query", error_message, "*" * 30, sep="\n")
+            self.logger.error(f'{"*" * 30} "Error during as400 Query: {error_message} {"*" * 30}')
             raise As400QueryExecutionError(error_message)
 
         return result

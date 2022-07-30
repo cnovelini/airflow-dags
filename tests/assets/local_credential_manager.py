@@ -5,7 +5,7 @@ from domain.enumerations.naming_convention import NamingConvention
 from domain.interfaces.credential_management import ICredentialManager
 
 
-class TestCredentialManager(ICredentialManager):
+class LocalCredentialManager(ICredentialManager):
     """Credential management using local environment vault."""
 
     def __init__(self, environment: Environment) -> None:

@@ -1,5 +1,4 @@
-import pytest
-from pytest import mark
+from pytest import mark, raises
 
 from domain.enumerations.environment import Environment
 from domain.enumerations.profile import Profile
@@ -37,5 +36,5 @@ class ProfileManagerTests:
 
         unknown_profile = 9999999999999999
 
-        with pytest.raises(ProfileError):
+        with raises(ProfileError):
             profile_manager.get_profile(unknown_profile, dev_environment)

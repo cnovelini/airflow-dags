@@ -27,7 +27,7 @@ class As400QueryExecutionError(RuntimeError):
     pass
 
 
-class PostgresDbError(RuntimeError):
+class DbSessionError(RuntimeError):
     pass
 
 

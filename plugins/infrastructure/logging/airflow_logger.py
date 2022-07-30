@@ -6,7 +6,7 @@ from domain.interfaces.logging import ILogger
 
 class AirflowLogger(ILogger):
     def __init__(self, profile: ICredentialManager) -> None:
-        self.logger = logging.getLogger(profile.get("AIRFLOW_LOGGER_NAME"))
+        self.logger = logging.getLogger(profile.get("logger_name"))
 
     def debug(self, message: str) -> None:
         self.logger.debug(message)
