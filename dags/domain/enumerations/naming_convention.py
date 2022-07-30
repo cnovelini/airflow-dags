@@ -14,9 +14,9 @@ class NamingConvention:
             "db_schema": "dev_db_schema",
         },
         Environment.STAGE: {
-            "user": "stage_developer_user",
-            "pass": "stage_developer_pass",
-            "host": "stage_developer_host",
+            "user": "stage_developer_username",
+            "pass": "stage_developer_password",
+            "host": "stage_developer_hostname",
             "db_type": "stage_developer_db_type",
             "db_lib": "stage_developer_db_lib",
             "db_port": "stage_developer_db_port",

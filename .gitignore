@@ -200,5 +200,6 @@ tests/reports/
 .airflowignore
 
 env.json
+to_send.json
 
 logs/
