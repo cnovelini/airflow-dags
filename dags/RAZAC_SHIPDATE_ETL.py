@@ -50,13 +50,15 @@ with DAG(
     stage_to_dw = BashOperator(bash_command="echo stage to dw", task_id="stage_to_dw", dag=dag)
 
     dag_end_success_control = BashOperator(
-        bash_command="echo etl success control", task_id="dag_end_success_control", trigger_rule=TriggerRule.ALL_SUCCESS
+        bash_command="echo etl success control",
+        task_id="dag_end_success_control",
+        trigger_rule=TriggerRule.ALL_SUCCESS,
+        dag=dag,
     )
 
     dag_end_failure_control = BashOperator(
         bash_command="echo etl failure control", task_id="dag_end_failure_control", trigger_rule=TriggerRule.ONE_FAILED
     )
 
-    dag_start_control >> s3_to_stage >> stage_to_dw
-    list(dag.tasks) >> dag_end_success_control
+    dag_start_control >> s3_to_stage >> stage_to_dw >> dag_end_success_control
     list(dag.tasks) >> dag_end_failure_control
