@@ -23,7 +23,7 @@ class SQLConnector(IDatabaseConnector):
         Raises:
             PostgresDbError: Raised when any database operation error occurs
         """
-        session = Session(self.get_connection())
+        session = Session(self.get_connection(), autocommit=False)
         try:
             yield session
             session.commit()
