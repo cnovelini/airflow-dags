@@ -85,7 +85,7 @@ class FilePathManager:
                 The file name with the current time added
 
         """
-        time_to_be_inserted = datetime.strftime(datetime.now(tz=timezone("America/Sao_Paulo")).time(), "%H-%m")
+        time_to_be_inserted = datetime.strftime(datetime.now(tz=timezone("America/Sao_Paulo")), "%H-%m")
         parted_file_name = list(target_file_name.rpartition("/"))
         parted_file_name.insert(2, time_to_be_inserted)
         parted_file_name.insert(3, "_")
