@@ -1,0 +1,25 @@
+{
+    "python.defaultInterpreterPath": "C:\\Users\\adria\\local_development\\bsw\\repo\\airflow-dags\\.venv\\Scripts\\python.exe",
+    "[python]": {
+        "gitlens.codeLens.symbolScopes": [
+            "!Module"
+        ],
+        "editor.wordBasedSuggestions": false,
+    },
+    "editor.formatOnSave": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true,
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/plugins"
+    ],
+    "spellright.language": [
+        "en",
+        "pt"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext",
+        "python"
+    ]
+}
