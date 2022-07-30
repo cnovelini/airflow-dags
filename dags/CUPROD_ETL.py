@@ -81,7 +81,7 @@ with DAG(
         logger=logger,
         s3=s3,
         database_client=postgres,
-        s3_file_path=path_manager.recover_last_path(profile.get("CUPROD_DUMP_FILE")),
+        s3_file_path=path_manager.recover_last_path(profile.get("CUPROD_CLEAN_FILE")),
         target_table_name=profile.get("CUPROD_TABLE"),
         task_id="S3_to_sql_database",
         dag=dag,

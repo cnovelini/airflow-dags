@@ -82,7 +82,7 @@ class AS400Connector(IDatabaseConnector):
         try:
             self.logger.info(f'{">" * 30} Initializing as400 Query {"<" * 30}')
             result = read_sql(expression, self.get_connection())
-            self.logger.info(f'{">" * 30} End as400 Query {" <" * 30}')
+            self.logger.info(f'{">" * 30} End as400 Query {"<" * 30}')
 
         except Exception as err:
             error_message = f"{type(err).__name__} -> {err}"

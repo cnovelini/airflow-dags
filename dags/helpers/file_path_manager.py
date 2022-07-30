@@ -1,5 +1,5 @@
-import re
 from datetime import date, datetime
+from pytz import timezone
 from typing import Dict
 
 from domain.exceptions.runtime_exceptions import PathConstructionError, PathNotFoundError
@@ -85,7 +85,7 @@ class FilePathManager:
                 The file name with the current time added
 
         """
-        time_to_be_inserted = re.sub(r"[:\.]", "-", str(datetime.now().time()))
+        time_to_be_inserted = datetime.strftime(datetime.now(tz=timezone("America/Brasilia")).time(), "%H-%m")
         parted_file_name = list(target_file_name.rpartition("/"))
         parted_file_name.insert(2, time_to_be_inserted)
         parted_file_name.insert(3, "_")
