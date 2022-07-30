@@ -123,4 +123,4 @@ class PostgresConnector(SQLConnector):
     def __pd_to_sql_insertion(self, session: Session, information: DataFrame, target_table: str):
         """ "Executes INSERT command using Pandas to_sql interface."""
         self.logger.info("Executing pandas to_sql insertion method")
-        information.to_sql(target_table, session, if_exists="replace")
+        information.to_sql(target_table, session.connection, if_exists="replace")
