@@ -94,5 +94,5 @@ CUPROD_COLUMNS = (
     "FDL020, "
     "FDLPGM, "
     "FDUSRA, "
-    "FDAATS, "
+    "FDAATS "
 )
