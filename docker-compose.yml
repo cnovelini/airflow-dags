@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  as400:
+    build:
+      context: .
+      dockerfile: Dockerfile-AS400
+      args:
+          - NODE_ENV=local
+    environment:
+      LICENSE: accept
+      DB2INST1_PASSWORD: $LOCAL_DB_PASS
+      DBNAME: $LOCAL_DB_USER
+    ports:
+      - 50000:50000
+    volumes:
+      - as400-db-volume:/database
+    restart: always
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: $LOCAL_DB_USER
+      POSTGRES_PASSWORD: $LOCAL_DB_PASS
+      POSTGRES_DB: $LOCAL_DB_SCHEMA
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$LOCAL_DB_USER"]
+      interval: 5s
+      retries: 5
+    restart: always
+
+volumes:
+  postgres-db-volume:
+  as400-db-volume:

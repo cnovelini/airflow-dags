@@ -1,4 +1,4 @@
-CUPROD_SCHEMA = """CREATE TABLE IF NOT EXISTS cuprod_stage_dev (
+CUPROD_TABLE_STRUCTURE = """
                 FDAKTR DECIMAL(7,0) DEFAULT 0 NOT NULL,
                 FDAVCD CHAR(2) DEFAULT ' ' NOT NULL,
                 FDDSGN CHAR(40) DEFAULT ' ' NOT NULL,
@@ -45,4 +45,54 @@ CUPROD_SCHEMA = """CREATE TABLE IF NOT EXISTS cuprod_stage_dev (
                 FDL020 CHAR(20) DEFAULT ' ' NOT NULL,
                 FDLPGM CHAR(10) DEFAULT ' ' NOT NULL,
                 FDUSRA CHAR(10) DEFAULT ' ' NOT NULL,
-                FDAATS TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL)"""
+                FDAATS TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL"""
+
+CUPROD_COLUMNS = (
+    "FDAKTR, "
+    "FDAVCD, "
+    "FDDSGN, "
+    "FDAKTX, "
+    "FDSUID, "
+    "FDPCID, "
+    "FDCMFG, "
+    "FDLPGC, "
+    "FDPSCF, "
+    "FDPSC1, "
+    "FDPSC2, "
+    "FDPSC3, "
+    "FDPRUM, "
+    "FDGUVC, "
+    "FDGPRI, "
+    "FDPRGC, "
+    "FDVDPC, "
+    "FDCHG1, "
+    "FDCHG2, "
+    "FDCHG3, "
+    "FDCHG4, "
+    "FDVAT1, "
+    "FDVAT2, "
+    "FDVAT3, "
+    "FDLPCD, "
+    "FDPGCD, "
+    "FDCMPG, "
+    "FDPSER, "
+    "FDPSEQ, "
+    "FDMACE, "
+    "FDDTYP, "
+    "FDPSF3, "
+    "FDOSCL, "
+    "FDTXTF, "
+    "FDPREC, "
+    "FDFESB, "
+    "FDFFSB, "
+    "FDXDSB, "
+    "FDN3CC, "
+    "FDA0CE, "
+    "FDT4CC, "
+    "FDKZCE, "
+    "FDZHTB, "
+    "FDL020, "
+    "FDLPGM, "
+    "FDUSRA, "
+    "FDAATS, "
+)

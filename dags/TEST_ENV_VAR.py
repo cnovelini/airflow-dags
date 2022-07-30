@@ -1,9 +1,8 @@
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.exceptions import AirflowFailException
-from datetime import timedelta
+from datetime import datetime, timedelta
 import os
-from datetime import datetime
 
 default_args = {
     "owner": "airflow",
