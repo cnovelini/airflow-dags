@@ -1,3 +1,4 @@
+import os
 from airflow.models import Variable
 
 from domain.enumerations.environment import Environment
@@ -12,7 +13,11 @@ class AirflowCredentialManager(ICredentialManager):
         self.env = NamingConvention.names[environment]
 
     def __get(self, credential_name: str) -> str:
-        return Variable.get(self.env.get(credential_name, credential_name))
+        real_cred_name = self.env.get(credential_name, credential_name)
+        try:
+            return Variable.get(real_cred_name)
+        except Exception:
+            return os.getenv(real_cred_name)
 
     def get(self, name: str) -> str:
         return self.__get(name)  # pragma: no cover
