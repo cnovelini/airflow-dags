@@ -32,7 +32,7 @@ class SqlTableReconstructOperator(BaseOperator):
     def execute(self, context, *args, **kwargs):
         self.logger.info(f"Starting 'table drop and recreate' task for {self.table_name}")
 
-        task_execution_status, task_errors = None, None
+        task_execution_status, task_errors = None, []
         processed_lines = 0
 
         task_instance: TaskInstance = context["ti"]

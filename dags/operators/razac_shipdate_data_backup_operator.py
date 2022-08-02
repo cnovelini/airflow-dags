@@ -36,7 +36,7 @@ class RazacShipdateDataBackupOperator(BaseOperator):
     def execute(self, context: dict, *args, **kwargs):
         self.logger.info("Starting S3 files consumption")
 
-        task_execution_status, task_errors = None, None
+        task_execution_status, task_errors = None, []
         action_status = {}
         processed_files = 0
 

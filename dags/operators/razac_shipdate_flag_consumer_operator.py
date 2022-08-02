@@ -24,6 +24,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
         target_table_name: str,
         columns_map: Dict[str, str],
         last_task: str,
+        target_folder: str,
         *args,
         **kwargs,
     ):
@@ -34,6 +35,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
         self.target_table_name = target_table_name
         self.columns_map = columns_map
         self.last_task = last_task
+        self.target_folder = target_folder
 
         super().__init__(*args, **kwargs)
 
@@ -44,7 +46,6 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
         insertion_status = {}
         processed_lines = 0
         processed_files = []
-        target_folder = "shipdate"
 
         task_instance: TaskInstance = context["ti"]
         xcom = json.loads(task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key))
@@ -52,7 +53,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
 
         try:
             self.logger.info("Recovering shipdate flag file (txt)")
-            flag_file_path = self.s3.discover_first_file(target_folder=f"{target_folder}/in", extension=".txt")
+            flag_file_path = self.s3.discover_first_file(target_folder=self.target_folder, extension=".txt")
 
             self.logger.info("Recovering target file names from flag file")
             flag_file_lines = self.s3.read_file_as_list(flag_file_path)
@@ -60,7 +61,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
             self.logger.info("Reading target files as pandas DataFrames")
             target_files_df_list = []
             for file_name in flag_file_lines:
-                file_df = self.s3.read_file_as_df("/".join([target_folder, "in", file_name]))
+                file_df = self.s3.read_file_as_df("/".join([self.target_folder, file_name]))
                 file_df["file"] = file_name
                 file_df["line"] = file_df.index + 1
 
