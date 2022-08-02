@@ -7,22 +7,23 @@ INSERT INTO CONTROLE_TRANSACAO (
     CTTR_USER_INSERT
 )
 VALUES(
-    "{dag_name}",
+    '{dag_name}',
     {status},
-    "{process_start_datetime}",
-    "{insertion_datetime}",
-    "{insertion_user}"
+    '{process_start_datetime}',
+    '{insertion_datetime}',
+    '{insertion_user}'
 )
+RETURNING CTTR_ID
 """
 
 DAG_CONTROL_TABLE_UPDATE = """
 UPDATE CONTROLE_TRANSACAO
 SET
     CTTR_ST = {status},
-    CTTR_HR_DT_END_PROCESS = "{process_end_datetime}",
+    CTTR_HR_DT_END_PROCESS = '{process_end_datetime}',
     CTTR_QT_PROCESSED_RECORD = {processed_records},
-    CTTR_DT_UPDATE = "{update_datetime}",
-    CTTR_USER_UPDATE = "{update_user}"
+    CTTR_DT_UPDATE = '{update_datetime}',
+    CTTR_USER_UPDATE = '{update_user}'
 WHERE
     CTTR_ID = {dag_control_id}
 """
@@ -48,22 +49,23 @@ INSERT INTO CONTROLE_TRANSACAO_DETALHE (
 )
 VALUES(
     {dag_control_id},
-    "{task_name}",
+    '{task_name}',
     {status},
-    "{transaction_start_datetime}",
-    "{insertion_datetime}",
-    "{insertion_user}"
+    '{transaction_start_datetime}',
+    '{insertion_datetime}',
+    '{insertion_user}'
 )
+RETURNING CTTR_ID
 """
 
 TASK_CONTROL_TABLE_UPDATE = """
 UPDATE CONTROLE_TRANSACAO_DETALHE
 SET
     CTTD_ST = {status},
-    CTTD_HR_DT_END_TRANSACTION = "{transaction_end_datetime}",
+    CTTD_HR_DT_END_TRANSACTION = '{transaction_end_datetime}',
     CTTD_QT_PROCESSED_RECORD = {processed_records},
-    CTTD_DT_UPDATE = "{update_datetime}",
-    CTTD_USER_UPDATE = "{update_user}"
+    CTTD_DT_UPDATE = '{update_datetime}',
+    CTTD_USER_UPDATE = '{update_user}'
 WHERE
     CTTD_ID = {task_control_id}
 """
@@ -87,8 +89,8 @@ INSERT INTO CONTROLE_TRANSACAO_ERRO (
 )
 VALUES(
     {task_id},
-    "{error_details}",
-    "{insertion_datetime}",
-    "{insertion_user}"
+    '{error_details}',
+    '{insertion_datetime}',
+    '{insertion_user}'
 )
 """

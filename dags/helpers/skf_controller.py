@@ -4,9 +4,7 @@ from pytz import timezone
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.constants.queries.control_queries import (
     DAG_CONTROL_TABLE_INSERT,
-    DAG_CONTROL_TABLE_SELECT_LAST_ID,
     DAG_CONTROL_TABLE_UPDATE,
-    TASK_CONTROL_TABLE_SELECT_LAST_ID,
     TASK_CONTROL_TABLE_UPDATE,
     TASK_ERROR_TABLE_INSERT,
 )
@@ -41,9 +39,9 @@ class SkfController:
                 insertion_user=self.database_client.current_user,
             )
 
-            session.execute(DAG_CONTROL_TABLE_INSERT.format(**create_info))
+            creation_result = session.execute(DAG_CONTROL_TABLE_INSERT.format(**create_info))
 
-            new_dag_control_id = list(session.execute(DAG_CONTROL_TABLE_SELECT_LAST_ID))[0][0]
+            new_dag_control_id = list(creation_result)[0][0]
 
             return new_dag_control_id
 
@@ -79,9 +77,9 @@ class SkfController:
                 insertion_user=self.database_client.current_user,
             )
 
-            session.execute(TASK_ERROR_TABLE_INSERT.format(**create_info))
+            creation_result = session.execute(TASK_ERROR_TABLE_INSERT.format(**create_info))
 
-            new_dag_control_id = list(session.execute(TASK_CONTROL_TABLE_SELECT_LAST_ID))[0][0]
+            new_dag_control_id = list(creation_result)[0][0]
 
             return new_dag_control_id
 
