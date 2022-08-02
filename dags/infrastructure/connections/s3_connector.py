@@ -61,7 +61,7 @@ class S3Connector(IDatabaseConnector):
                 information.to_csv(csv_buffer, index=False)
 
                 self.logger.info(
-                    f"Sending CSV file to S3 bucket {target_bucket or self.default_bucket} on path {target_path}"
+                    f"Sending CSV file to S3 bucket {(target_bucket or self.default_bucket)} on path {target_path}"
                 )
                 self.get_connection().put_object(
                     Bucket=target_bucket or self.default_bucket, Key=target_path, Body=csv_buffer.getvalue()
@@ -89,9 +89,9 @@ class S3Connector(IDatabaseConnector):
             PandasDataFrameGenerationError: Raised when DataFrame generation fails
         """
         try:
-            self.logger.info(f"Recovering {target_path} file from {target_bucket or self.default_bucket} bucket...")
+            self.logger.info(f"Recovering {target_path} file from {(target_bucket or self.default_bucket)} bucket...")
             s3_dump_file = self.get_connection().get_object(
-                Bucket=target_bucket or self.default_bucket, Key=target_path
+                Bucket=(target_bucket or self.default_bucket), Key=target_path
             )
             self.logger.info("S3 file download executed with success!")
         except Exception as download_err:
@@ -122,15 +122,15 @@ class S3Connector(IDatabaseConnector):
         target_objects = list(bucket_iterator.search(f"Contents[?contains(Key, '{extension}')][]"))
 
         if len(target_objects) == 0:
-            raise S3FileNotFoundForExtensionError(target_bucket or self.default_bucket, target_folder, extension)
+            raise S3FileNotFoundForExtensionError((target_bucket or self.default_bucket), target_folder, extension)
 
         return "/".join([target_folder, target_objects[0]["Key"]])
 
     def read_file_as_list(self, target_path: str, target_bucket: str = None) -> List[str]:
         """Reads a file from S3 and convert the file lines as a list of strings."""
         try:
-            self.logger.info(f"Recovering {target_path} file from {target_bucket or self.default_bucket} bucket...")
-            s3_file = self.get_connection().get_object(Bucket=target_bucket or self.default_bucket, Key=target_path)
+            self.logger.info(f"Recovering {target_path} file from {(target_bucket or self.default_bucket)} bucket...")
+            s3_file = self.get_connection().get_object(Bucket=(target_bucket or self.default_bucket), Key=target_path)
             self.logger.info("S3 file download executed with success!")
         except Exception as download_err:
             error_message = f"{type(download_err).__name__} -> {download_err}"
