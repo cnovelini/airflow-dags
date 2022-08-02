@@ -154,7 +154,6 @@ with DAG(
         logger=logger,
         controller=skf_controller,
         action="dag_end",
-        last_task="stage_to_dw",
         last_task="backup_s3_files",
         task_id="dag_end_success_control",
         dag=dag,
