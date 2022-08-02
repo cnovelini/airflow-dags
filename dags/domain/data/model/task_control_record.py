@@ -5,7 +5,7 @@ Base = declarative_base()
 
 
 class TaskControlRecord(Base):
-    __tableNAME__ = "CONTROLE_TRANSACAO_DETALHE"
+    __tablename__ = "CONTROLE_TRANSACAO_DETALHE"
     CTTD_ID = Column(Integer, primary_key=True)
     CTTR_ID = Column(Integer)
     CTTD_NM = Column(String)

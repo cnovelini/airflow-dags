@@ -5,7 +5,7 @@ Base = declarative_base()
 
 
 class DagControlRecord(Base):
-    __tableNAME__ = "CONTROLE_TRANSACAO"
+    __tablename__ = "CONTROLE_TRANSACAO"
     CTTR_ID = Column(Integer, primary_key=True)
     CTTR_NM = Column(String)
     CTTR_ST = Column(Integer)
