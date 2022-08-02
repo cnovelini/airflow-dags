@@ -2,10 +2,6 @@
 from airflow import DAG
 from datetime import datetime, timedelta
 
-from operators.as400_to_s3_operator import AS400ToS3Operator
-from operators.s3_dataframe_cleanup_operator import S3DataframeCleanupOperator
-from operators.s3_to_sql_database_operator import S3ToSqlDatabaseOperator
-from operators.sql_table_reconstruct_operator import SqlTableReconstructOperator
 from domain.constants.queries.as400_queries import SELECT_FROM_CUPROD
 from domain.data.coh.tables.cuprod.struct import CUPROD_COLUMNS, CUPROD_TABLE_STRUCTURE
 from domain.enumerations.environment import Environment
@@ -17,6 +13,10 @@ from infrastructure.connections.as400_connector import AS400Connector
 from infrastructure.connections.postgres_connector import PostgresConnector
 from infrastructure.connections.s3_connector import S3Connector
 from infrastructure.logging.airflow_logger import AirflowLogger
+from operators.as400_to_s3_operator import AS400ToS3Operator
+from operators.s3_dataframe_cleanup_operator import S3DataframeCleanupOperator
+from operators.s3_to_sql_database_operator import S3ToSqlDatabaseOperator
+from operators.uncontrolled_sql_table_reconstruct_operator import UncontrolledSqlTableReconstructOperator
 
 
 # Global variables (action executioners)
@@ -48,7 +48,7 @@ with DAG(
     schedule_interval=None,
 ) as dag:
 
-    sql_structure = SqlTableReconstructOperator(
+    sql_structure = UncontrolledSqlTableReconstructOperator(
         logger=logger,
         database_client=postgres,
         table_name=profile.get("CUPROD_TABLE"),
