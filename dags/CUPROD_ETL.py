@@ -23,8 +23,17 @@ from operators.uncontrolled_sql_table_reconstruct_operator import UncontrolledSq
 profile = ProfileManager.get_profile(Profile.PROFILE_001, Environment.STAGE)
 logger = AirflowLogger(profile)
 as_400 = AS400Connector(profile, logger)
-s3 = S3Connector(profile, logger)
-postgres = PostgresConnector(profile, logger)
+s3 = S3Connector(
+    logger,
+    access_key=profile.get("AWS_ACCESS_KEY_ID"),
+    secret_access_key=profile.get("AWS_SECRET_ACCESS_KEY"),
+    default_bucket=profile.get("COH_DUMP_BUCKET"),
+)
+postgres = PostgresConnector(
+    logger,
+    profile.generate_sqlalchemy_connection_string(),
+    current_user=profile.get_user(),
+)
 path_manager = FilePathManager(profile, logger)
 
 # Defining main DAG's config
