@@ -52,7 +52,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
 
         try:
             self.logger.info("Recovering shipdate flag file (txt)")
-            flag_file_path = self.s3.discover_first_file(folder=f"{target_folder}/in", extension=".txt")
+            flag_file_path = self.s3.discover_first_file(target_folder=f"{target_folder}/in", extension=".txt")
 
             self.logger.info("Recovering target file names from flag file")
             flag_file_lines = self.s3.read_file_as_list(flag_file_path)
