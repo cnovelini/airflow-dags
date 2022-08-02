@@ -47,7 +47,7 @@ class AirflowCredentialManager(ICredentialManager):
         host = self.__get(host_key) if host_key else self.get_host()
         schema = self.__get(schema_key or "db_schema")
         db_type = self.__get(db_type_key or "db_type")
-        db_lib = self.__get(db_lib_key or "db_schema")
+        db_lib = self.__get(db_lib_key or "db_lib")
         db_port = self.__get(db_port_key or "db_port")
 
         return f"{db_type}+{db_lib}://{user}:{password}@{host}:{db_port}/{schema}"
