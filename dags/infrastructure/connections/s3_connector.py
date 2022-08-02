@@ -27,8 +27,6 @@ class S3Connector(IDatabaseConnector):
         self.logger = logger
 
     def get_connection(self) -> Any:
-        print(f"AK: {self.access_key_id}")
-        print(f"SAK: {self.secret_access_key_id}")
         if not self.s3_client:
             self.logger.info("Generating S3 connection object...")
             self.s3_client = boto3.client(
@@ -116,7 +114,9 @@ class S3Connector(IDatabaseConnector):
         """Search inside target folder for the first file with the informed extension"""
 
         bucket_iterator = (
-            self.get_connection().get_paginator("list_objects_v2").paginate(Bucket=target_bucket or self.default_bucket)
+            self.get_connection()
+            .get_paginator("list_objects_v2")
+            .paginate(Bucket=(target_bucket or self.default_bucket))
         )
 
         target_objects = list(bucket_iterator.search(f"Contents[?contains(Key, '{extension}')][]"))
