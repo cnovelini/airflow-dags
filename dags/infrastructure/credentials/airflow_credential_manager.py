@@ -17,7 +17,11 @@ class AirflowCredentialManager(ICredentialManager):
         try:
             return Variable.get(real_cred_name)
         except Exception:
-            return os.getenv(real_cred_name)
+            cred = os.getenv(real_cred_name)
+            if cred:
+                return cred
+            else:
+                raise ValueError(f"Not existent environment variable: {real_cred_name}")
 
     def get(self, name: str) -> str:
         return self.__get(name)  # pragma: no cover
