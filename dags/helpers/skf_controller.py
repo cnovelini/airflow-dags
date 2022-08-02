@@ -1,5 +1,6 @@
 from datetime import datetime
 from pytz import timezone
+from dags.domain.constants.queries.control_queries import DAG_CONTROL_TABLE_INSERT
 
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.constants.queries.control_queries import (
@@ -40,7 +41,7 @@ class SkfController:
                 insertion_user=self.database_client.current_user,
             )
 
-            session.execute(TASK_ERROR_TABLE_INSERT.format(**create_info))
+            session.execute(DAG_CONTROL_TABLE_INSERT.format(**create_info))
 
             new_dag_control_id = list(session.execute(DAG_CONTROL_TABLE_SELECT_LAST_ID))[0][0]
 
