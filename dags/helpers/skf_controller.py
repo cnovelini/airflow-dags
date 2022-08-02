@@ -43,7 +43,7 @@ class SkfController:
 
             new_dag_control_id = list(creation_result)[0][0]
 
-            return new_dag_control_id
+            return int(new_dag_control_id)
 
     def end_dag_control(self, dag_control_id: int, status: DagStatus, processed_lines: int):
         """Store a DAG end record in control table."""
@@ -79,9 +79,9 @@ class SkfController:
 
             creation_result = session.execute(TASK_ERROR_TABLE_INSERT.format(**create_info))
 
-            new_dag_control_id = list(creation_result)[0][0]
+            new_task_control_id = list(creation_result)[0][0]
 
-            return new_dag_control_id
+            return int(new_task_control_id)
 
     def end_task_control(self, task_control_id: int, status: DagStatus, processed_lines: int):
         """Store a TASK end record in control table."""
