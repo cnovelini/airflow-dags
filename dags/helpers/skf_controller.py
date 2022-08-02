@@ -1,15 +1,15 @@
 from datetime import datetime
 from pytz import timezone
-from dags.domain.enumerations.task_status import TaskStatus
-from dags.infrastructure.connections.s3_connector import S3Connector
 
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.data.model.dag_control_record import DagControlRecord
 from domain.data.model.task_control_record import TaskControlRecord
 from domain.data.model.task_error_record import TaskErrorRecord
 from domain.enumerations.dag_status import DagStatus
+from domain.enumerations.task_status import TaskStatus
 from domain.exceptions.control_exceptions import DagControlRecordNotFoundError, TaskControlRecordNotFoundError
 from domain.interfaces.logging import ILogger
+from infrastructure.connections.s3_connector import S3Connector
 
 
 class SkfController:
