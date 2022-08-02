@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class VendorCode(Enum):
+class VendorCode(IntEnum):
     RAZAC = 1
     MARIMEX = 2
