@@ -1,3 +1,4 @@
+import json
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 import pandas as pd
@@ -46,7 +47,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
         target_folder = "shipdate"
 
         task_instance: TaskInstance = context["ti"]
-        xcom = task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key)
+        xcom = json.loads(task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key))
         task_control_id = self.controller.start_task_control(task_instance.task_id, xcom["dag_control_record_id"])
 
         try:
@@ -106,10 +107,12 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
             self.logger.info("Updating XCom with task information")
             task_instance.xcom_push(
                 self.controller.xcom_key,
-                {
-                    **xcom,
-                    f"{task_instance.task_id}_status": task_execution_status,
-                    f"{task_instance.task_id}_errors": task_errors,
-                    f"{task_instance.task_id}_details": dict(processed_files=processed_files),
-                },
+                json.dumps(
+                    {
+                        **xcom,
+                        f"{task_instance.task_id}_status": task_execution_status,
+                        f"{task_instance.task_id}_errors": task_errors,
+                        f"{task_instance.task_id}_details": dict(processed_files=processed_files),
+                    }
+                ),
             )

@@ -1,3 +1,4 @@
+import json
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 
@@ -41,14 +42,14 @@ class ControlOperator(BaseOperator):
             f"Sending initial Dag's shared info to XCom with key: {self.controller.xcom_key}."
             f" Info populated with control record ID: {dag_control_record_id}"
         )
-        task_instance.xcom_push(self.controller.xcom_key, dict(dag_control_record_id=dag_control_record_id))
+        task_instance.xcom_push(self.controller.xcom_key, json.dumps(dict(dag_control_record_id=dag_control_record_id)))
 
     def __execute_dag_success_end_control(self, context: dict) -> None:
 
         task_instance: TaskInstance = context["ti"]
 
         self.logger.info(f"Recovering DAG's shared info from XCom with key: {self.controller.xcom_key}")
-        shared_info = task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key)
+        shared_info = json.loads(task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key))
 
         self.logger.info("Saving DAG end record on database with success status")
         self.controller.end_dag_control(status=DagStatus.SUCCESS, processed_lines=shared_info["processed_lines"])
@@ -58,7 +59,7 @@ class ControlOperator(BaseOperator):
         task_instance: TaskInstance = context["ti"]
 
         self.logger.info(f"Recovering DAG's shared info from XCom with key: {self.controller.xcom_key}")
-        shared_info = task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key)
+        shared_info = json.loads(task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key))
 
         self.logger.info("Saving DAG end record on database with failure status")
         self.controller.end_dag_control(status=DagStatus.FAILED, processed_lines=shared_info["processed_lines"])
