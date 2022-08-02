@@ -66,14 +66,6 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
-dag_end_failure_control = ControlOperator(
-    logger=logger,
-    controller=skf_controller,
-    action="dag_end_failure_control",
-    last_task=None,
-    task_id="dag_end_failure_control",
-)
-
 # Dag declaration
 with DAG(
     "RAZAC_SHIPDATE_ETL",
@@ -156,6 +148,15 @@ with DAG(
         action="dag_end",
         last_task="backup_s3_files",
         task_id="dag_end_success_control",
+        dag=dag,
+    )
+
+    dag_end_failure_control = ControlOperator(
+        logger=logger,
+        controller=skf_controller,
+        action="dag_end_failure_control",
+        last_task=None,
+        task_id="dag_end_failure_control",
         dag=dag,
     )
 
