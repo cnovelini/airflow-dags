@@ -1,9 +1,9 @@
 from datetime import datetime
 from pytz import timezone
-from dags.domain.constants.queries.control_queries import DAG_CONTROL_TABLE_INSERT
 
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.constants.queries.control_queries import (
+    DAG_CONTROL_TABLE_INSERT,
     DAG_CONTROL_TABLE_SELECT_LAST_ID,
     DAG_CONTROL_TABLE_UPDATE,
     TASK_CONTROL_TABLE_SELECT_LAST_ID,
