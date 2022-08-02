@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Any, List
 
-from pandas import DataFrame
+from pandas import DataFrame, read_sql
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.engine import Engine
@@ -13,8 +13,8 @@ from domain.exceptions.runtime_exceptions import (
     DbDropError,
     DbInsertionError,
     UnknownInsertionMethodError,
+    PostgresTableRecoveryExecutionError,
 )
-from domain.interfaces.credential_management import ICredentialManager
 from domain.interfaces.logging import ILogger
 
 
@@ -23,12 +23,23 @@ class PostgresConnector(SQLConnector):
 
     engine: Engine
 
-    def __init__(self, credential_manager: ICredentialManager, logger: ILogger):
-        self.connection_string = credential_manager.generate_sqlalchemy_connection_string()
+    def __init__(
+        self,
+        logger: ILogger,
+        connection_string: str,
+        internal_control_columns: List[str] = None,
+        current_user: str = "NOT_INFORMED",
+    ) -> None:
         self.logger = logger
-        self.engine = None
+        self.connection_string = connection_string
+        self.internal_control_columns = internal_control_columns or []
+        self.current_user = current_user
 
-        self.insertion_routines = {DbInsertionMethod.PD_TO_SQL: self.__pd_to_sql_insertion}
+        self.engine = None
+        self.insertion_routines = {
+            DbInsertionMethod.FULL_PD_TO_SQL: self.__full_insertion,
+            DbInsertionMethod.LINE_WISE_PD_TO_SQL: self.__line_wise_insertion,
+        }
 
     def get_connection(self) -> Any:
         if not self.engine:
@@ -89,8 +100,8 @@ class PostgresConnector(SQLConnector):
         session: Session,
         information: DataFrame,
         target_table: str,
-        insertion_method: DbInsertionMethod = DbInsertionMethod.PD_TO_SQL,
-    ) -> None:
+        insertion_method: DbInsertionMethod = DbInsertionMethod.FULL_PD_TO_SQL,
+    ) -> dict:
         """Insert information on database. Able to execute multiple insertion methods.
 
         Parameters:
@@ -113,8 +124,10 @@ class PostgresConnector(SQLConnector):
         """
         try:
             self.logger.info("Starting Postgres insertion...")
-            self.insertion_routines[insertion_method](session, information, target_table)
+            insertion_info = self.insertion_routines[insertion_method](session, information, target_table)
             self.logger.info("Postgres insertion executed with success!")
+
+            return insertion_info
 
         except KeyError:
             error_message = f"Insertion method not mapped yet: {insertion_method}. Please verify"
@@ -123,10 +136,59 @@ class PostgresConnector(SQLConnector):
 
         except Exception as insert_err:
             error_message = f"{type(insert_err).__name__} -> {insert_err}"
-            self.logger.error(f"Error during Postgres insertion: {error_message}")
+            self.logger.error(f"Unknown error during Postgres insertion: {error_message}")
             raise DbInsertionError(error_message)
 
-    def __pd_to_sql_insertion(self, session: Session, information: DataFrame, target_table: str):
-        """ "Executes INSERT command using Pandas to_sql interface."""
+    def read_as_df(self, session: Session, table_name: str) -> DataFrame:
+        """Reads table information and returns it as pandas DataFrame."""
+        try:
+            self.logger.info(f'{">" * 30} Initializing Postgres table data recovery {"<" * 30}')
+            result = read_sql(table_name, session.connection())
+            self.logger.info(f'{">" * 30} End Postgres table data recovery {"<" * 30}')
+
+        except Exception as err:
+            error_message = f"{type(err).__name__} -> {err}"
+            self.logger.error(f'{"*" * 30} "Error during Postgres table data recovery: {error_message} {"*" * 30}')
+            raise PostgresTableRecoveryExecutionError(error_message)
+
+        return result
+
+    def __full_insertion(self, session: Session, information: DataFrame, target_table: str) -> dict:
+        """Executes INSERT command using Pandas to_sql interface."""
         self.logger.info("Executing pandas to_sql insertion method")
-        information.to_sql(target_table, session.connection(), if_exists="replace")
+
+        try:
+            information.to_sql(target_table, session.connection(), if_exists="replace")
+            insertion_info = dict(processed=len(information), failed=0, errors=[])
+        except Exception as ex:
+            insertion_info = dict(processed=0, failed=len(information), errors=[f"{type(ex).__name__}: {ex}"])
+
+        return insertion_info
+
+    def __line_wise_insertion(self, session: Session, information: DataFrame, target_table: str):
+        """Executes INSERT command using line-wise insertion method."""
+        self.logger.info("Executing line-wise insertion method")
+
+        insertion_info = dict(processed=0, failed=0, errors=[])
+
+        for info_row in information.to_dict("records"):
+            try:
+                DataFrame(
+                    {key: value for key, value in info_row.items() if key not in self.internal_control_columns}
+                ).to_sql(target_table, session.connection(), if_exists="replace")
+
+                insertion_info["processed"] += 1
+
+            except Exception as insert_err:
+                insertion_info["failed"] += 1
+                insertion_info["errors"].append(
+                    " ".join(
+                        [
+                            f"File: {info_row['file']};",
+                            f"Row: {info_row['index']};",
+                            f"Error: {type(insert_err).__name__} -> {insert_err}",
+                        ]
+                    )
+                )
+
+        return insertion_info

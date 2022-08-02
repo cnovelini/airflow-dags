@@ -12,6 +12,8 @@ from domain.interfaces.database_connection import IDatabaseConnector
 class SQLConnector(IDatabaseConnector):
     """SQL Database connection interface."""
 
+    current_user: str
+
     @contextmanager
     def session_scope(self) -> Iterator[Session]:
         """Generates a database session context.
@@ -47,6 +49,10 @@ class SQLConnector(IDatabaseConnector):
         session: Session,
         information: DataFrame,
         target_table: str,
-        insertion_method: DbInsertionMethod = DbInsertionMethod.PD_TO_SQL,
+        insertion_method: DbInsertionMethod = DbInsertionMethod.FULL_PD_TO_SQL,
     ) -> None:
         """Insert information on database. Able to execute multiple insertion methods."""
+
+    @abstractmethod
+    def read_as_df(self, session: Session, table_name: str) -> DataFrame:
+        """Reads table information and returns it as pandas DataFrame."""

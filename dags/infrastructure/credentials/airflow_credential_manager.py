@@ -31,12 +31,23 @@ class AirflowCredentialManager(ICredentialManager):
     def get_host(self) -> str:
         return self.__get("host")
 
-    def generate_sqlalchemy_connection_string(self) -> str:
-        return "".join(
-            [
-                f"{self.__get('db_type')}+{self.__get('db_lib')}://",
-                f"{self.get_user()}:{self.get_pass()}",
-                f"@{self.get_host()}:{self.__get('db_port')}",
-                f"/{self.__get('db_schema')}",
-            ]
-        )
+    def generate_sqlalchemy_connection_string(
+        self,
+        user_key: str = None,
+        password_key: str = None,
+        host_key: str = None,
+        schema_key: str = None,
+        db_type_key: str = None,
+        db_lib_key: str = None,
+        db_port_key: str = None,
+    ) -> str:
+
+        user = self.__get(user_key) if user_key else self.get_user()
+        password = self.__get(password_key) if password_key else self.get_pass()
+        host = self.__get(host_key) if host_key else self.get_host()
+        schema = self.__get(schema_key or "db_schema")
+        db_type = self.__get(db_type_key or "db_type")
+        db_lib = self.__get(db_lib_key or "db_schema")
+        db_port = self.__get(db_port_key or "db_port")
+
+        return f"{db_type}+{db_lib}://{user}:{password}@{host}:{db_port}/{schema}"

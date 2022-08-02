@@ -45,8 +45,33 @@ class ICredentialManager(ABC):
         """
 
     @abstractmethod
-    def generate_sqlalchemy_connection_string(self) -> str:
+    def generate_sqlalchemy_connection_string(
+        self,
+        user_key: str = None,
+        password_key: str = None,
+        host_key: str = None,
+        schema_key: str = None,
+        db_type_key: str = None,
+        db_lib_key: str = None,
+        db_port_key: str = None,
+    ) -> str:
         """Generates a fully functional SQLAlchemy connection string.
+
+        Parameters:
+            user_key: (str)
+                The username key on credentials vault
+            password_key: (str)
+                The password key on credentials vault
+            host_key: (str)
+                The hostname key on credentials vault
+            schema_key: (str)
+                The schema key on credentials vault
+            db_type_key: (str)
+                The database type key on credentials vault
+            db_lib_key: (str)
+                The python driver key on credentials vault
+            db_port_key: (str)
+                The connection port key on credentials vault
 
         Returns:
             connection_string: (str)

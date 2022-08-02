@@ -1,3 +1,4 @@
+from typing import List
 from airflow import AirflowException
 
 
@@ -55,9 +56,41 @@ class S3FileDownloadError(RuntimeError):
     pass
 
 
+class S3FileNotFoundForExtensionError(RuntimeError):
+    pass
+
+
+class S3FileToListGenerationError(RuntimeError):
+    pass
+
+
 class PandasDataFrameGenerationError(RuntimeError):
     pass
 
 
 class TransformationExecutionError(RuntimeError):
     pass
+
+
+class PostgresTableRecoveryExecutionError(RuntimeError):
+    pass
+
+
+class SqlInsertionError(RuntimeError):
+    def __init__(self, lines_failed: int, errors: List[str]) -> None:
+        self.errors = errors
+        message = (
+            f"Task failed to insert all information to database. {lines_failed} line(s) failed."
+            " Logs can be consulted on origin S3 /err folder."
+        )
+        super().__init__(message)
+
+
+class S3FileMoveError(RuntimeError):
+    def __init__(self, lines_failed: int, errors: List[str]) -> None:
+        self.errors = errors
+        message = (
+            f"Task failed to move all files requested. {lines_failed} line(s) failed."
+            " Logs can be consulted on origin S3 /err folder."
+        )
+        super().__init__(message)
