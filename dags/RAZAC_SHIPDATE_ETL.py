@@ -162,4 +162,11 @@ with DAG(
 
     dag_start_control >> stage_table_reconstruction >> s3_to_stage
     s3_to_stage >> dw_table_reconstruction >> stage_to_dw >> backup_s3_files >> dag_end_success_control
-    list(dag.tasks) >> dag_end_failure_control
+
+    dag_start_control >> dag_end_failure_control
+    stage_table_reconstruction >> dag_end_failure_control
+    s3_to_stage >> dag_end_failure_control
+    dw_table_reconstruction >> dag_end_failure_control
+    stage_to_dw >> dag_end_failure_control
+    backup_s3_files >> dag_end_failure_control
+    dag_end_success_control >> dag_end_failure_control
