@@ -5,6 +5,7 @@ from domain.abstractions.sql_database_connection import SQLConnector
 from domain.constants.queries.control_queries import (
     DAG_CONTROL_TABLE_INSERT,
     DAG_CONTROL_TABLE_UPDATE,
+    TASK_CONTROL_TABLE_INSERT,
     TASK_CONTROL_TABLE_UPDATE,
     TASK_ERROR_TABLE_INSERT,
 )
@@ -77,7 +78,7 @@ class SkfController:
                 insertion_user=self.database_client.current_user,
             )
 
-            creation_result = session.execute(TASK_ERROR_TABLE_INSERT.format(**create_info))
+            creation_result = session.execute(TASK_CONTROL_TABLE_INSERT.format(**create_info))
 
             new_task_control_id = list(creation_result)[0][0]
 
