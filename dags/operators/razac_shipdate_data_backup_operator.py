@@ -66,6 +66,7 @@ class RazacShipdateDataBackupOperator(BaseOperator):
             self.logger.info("Sending failure information to error control table")
             task_execution_status = TaskStatus.FAILED
             self.controller.inform_task_error(task_control_id, f"{type(ex).__name__}: {ex}")
+            raise ex
 
         finally:
             self.logger.info("Updating XCom with processed information")

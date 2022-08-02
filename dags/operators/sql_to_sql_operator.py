@@ -68,11 +68,13 @@ class SqlToSqlOperator(BaseOperator):
             self.logger.info("Storing insertion errors on control S3")
             errors_file_path = "/".join([self.controller.error_log_folder, f"{task_instance.dag_id}_errors.log"])
             self.controller.s3.save_log(path=errors_file_path, errors=insertion_err.errors)
+            raise insertion_err
 
         except Exception as ex:
             self.logger.info("Sending failure information to error control table")
             task_execution_status = TaskStatus.FAILED
             self.controller.inform_task_error(task_control_id, f"{type(ex).__name__}: {ex}")
+            raise ex
 
         finally:
             self.logger.info(f"Closing task control record with status: {task_execution_status.name}")

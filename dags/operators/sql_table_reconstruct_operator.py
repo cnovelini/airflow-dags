@@ -58,6 +58,7 @@ class SqlTableReconstructOperator(BaseOperator):
             self.controller.inform_task_error(task_control_id, error_message)
             task_execution_status = TaskStatus.FAILED
             task_errors = [error_message]
+            raise ex
 
         finally:
             self.logger.info(f"Closing task control record with status: {task_execution_status.name}")
