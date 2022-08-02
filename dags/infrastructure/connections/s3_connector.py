@@ -27,6 +27,8 @@ class S3Connector(IDatabaseConnector):
         self.logger = logger
 
     def get_connection(self) -> Any:
+        print(f"AK: {self.access_key_id}")
+        print(f"SAK: {self.secret_access_key_id}")
         if not self.s3_client:
             self.logger.info("Generating S3 connection object...")
             self.s3_client = boto3.client(

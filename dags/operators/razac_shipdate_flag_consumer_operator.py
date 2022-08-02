@@ -40,7 +40,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
     def execute(self, context: dict, *args, **kwargs):
         self.logger.info("Starting S3 files consumption")
 
-        task_execution_status, task_errors = None, None
+        task_execution_status, task_errors = None, []
         insertion_status = {}
         processed_lines = 0
         processed_files = []
