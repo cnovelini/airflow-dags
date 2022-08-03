@@ -1,14 +1,14 @@
+from logging import Logger
 from airflow.models import BaseOperator
 
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.exceptions.runtime_exceptions import DbSessionError
-from domain.interfaces.logging import ILogger
 
 
 class UncontrolledSqlTableReconstructOperator(BaseOperator):
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         database_client: SQLConnector,
         table_name: str,
         table_structure: str,

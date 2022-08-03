@@ -1,3 +1,4 @@
+from logging import Logger
 from typing import Any, List
 
 from pandas import DataFrame, read_sql
@@ -15,7 +16,6 @@ from domain.exceptions.runtime_exceptions import (
     UnknownInsertionMethodError,
     PostgresTableRecoveryExecutionError,
 )
-from domain.interfaces.logging import ILogger
 
 
 class PostgresConnector(SQLConnector):
@@ -25,7 +25,7 @@ class PostgresConnector(SQLConnector):
 
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         connection_string: str,
         internal_control_columns: List[str] = None,
         current_user: str = "NOT_INFORMED",

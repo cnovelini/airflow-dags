@@ -1,4 +1,5 @@
 from io import StringIO
+from logging import Logger
 from typing import Any, List
 
 import boto3
@@ -11,7 +12,6 @@ from domain.exceptions.runtime_exceptions import (
     S3FileNotFoundForExtensionError,
 )
 from domain.interfaces.database_connection import IDatabaseConnector
-from domain.interfaces.logging import ILogger
 
 
 class S3Connector(IDatabaseConnector):
@@ -19,7 +19,7 @@ class S3Connector(IDatabaseConnector):
 
     s3_client: boto3.client = None
 
-    def __init__(self, logger: ILogger, access_key: str, secret_access_key: str, default_bucket: str):
+    def __init__(self, logger: Logger, access_key: str, secret_access_key: str, default_bucket: str):
         self.access_key_id = access_key
         self.secret_access_key_id = secret_access_key
         self.default_bucket = default_bucket

@@ -1,4 +1,5 @@
 import json
+from logging import Logger
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 
@@ -6,14 +7,13 @@ from domain.abstractions.sql_database_connection import SQLConnector
 from domain.enumerations.database_insertion_method import DbInsertionMethod
 from domain.enumerations.task_status import TaskStatus
 from domain.exceptions.runtime_exceptions import SqlInsertionError
-from domain.interfaces.logging import ILogger
 from helpers.skf_controller import SkfController
 
 
 class SqlToSqlOperator(BaseOperator):
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         controller: SkfController,
         origin_client: SQLConnector,
         destination_client: SQLConnector,

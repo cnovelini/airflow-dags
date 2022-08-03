@@ -1,14 +1,14 @@
+from logging import Logger
 from airflow.models import BaseOperator
 
 from domain.abstractions.sql_database_connection import SQLConnector
-from domain.interfaces.logging import ILogger
 from infrastructure.connections.s3_connector import S3Connector
 
 
 class S3ToSqlDatabaseOperator(BaseOperator):
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         s3: S3Connector,
         database_client: SQLConnector,
         s3_file_path: str,

@@ -1,3 +1,4 @@
+from logging import Logger
 from typing import Any
 
 import pyodbc
@@ -7,13 +8,12 @@ from domain.constants.as400 import COMMIT_MODE_CS, CONNECTION_STRING, CONNECTION
 from domain.exceptions.runtime_exceptions import As400ConnectionError, As400QueryExecutionError
 from domain.interfaces.credential_management import ICredentialManager
 from domain.interfaces.database_connection import IDatabaseConnector
-from domain.interfaces.logging import ILogger
 
 
 class AS400Connector(IDatabaseConnector):
     """AS400 connection class."""
 
-    def __init__(self, credential_manager: ICredentialManager, logger: ILogger):
+    def __init__(self, credential_manager: ICredentialManager, logger: Logger):
         self.host = credential_manager.get("coh_hostname")
         self.username = credential_manager.get("coh_username")
         self.password = credential_manager.get("coh_password")

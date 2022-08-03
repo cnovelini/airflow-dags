@@ -1,10 +1,10 @@
 from datetime import date, datetime
+from logging import Logger
 from pytz import timezone
 from typing import Dict
 
 from domain.exceptions.runtime_exceptions import PathConstructionError, PathNotFoundError
 from domain.interfaces.credential_management import ICredentialManager
-from domain.interfaces.logging import ILogger
 
 
 class FilePathManager:
@@ -12,7 +12,7 @@ class FilePathManager:
 
     transformed_paths: Dict[str, str]
 
-    def __init__(self, profile: ICredentialManager, logger: ILogger) -> None:
+    def __init__(self, profile: ICredentialManager, logger: Logger) -> None:
         self.transformed_paths = {}
         self.default_prefix = profile.get("CUPROD_ETL_DEFAULT_S3_PREFIX")
         self.logger = logger

@@ -1,13 +1,13 @@
+from logging import Logger
 from airflow.models import BaseOperator
 
-from domain.interfaces.logging import ILogger
 from infrastructure.connections.as400_connector import AS400Connector
 from infrastructure.connections.s3_connector import S3Connector
 
 
 class AS400ToS3Operator(BaseOperator):
     def __init__(
-        self, logger: ILogger, as400: AS400Connector, s3: S3Connector, query: str, target_s3_path: str, *args, **kwargs
+        self, logger: Logger, as400: AS400Connector, s3: S3Connector, query: str, target_s3_path: str, *args, **kwargs
     ):
         self.logger = logger
         self.as400 = as400

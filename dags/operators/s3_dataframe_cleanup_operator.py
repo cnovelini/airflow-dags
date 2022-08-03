@@ -1,14 +1,14 @@
+from logging import Logger
 from airflow.models import BaseOperator
 
 from domain.interfaces.information_transformation import TransformationExecutioner
-from domain.interfaces.logging import ILogger
 from infrastructure.connections.s3_connector import S3Connector
 
 
 class S3DataframeCleanupOperator(BaseOperator):
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         s3: S3Connector,
         dataframe_cleaner: TransformationExecutioner,
         original_file_path: str,

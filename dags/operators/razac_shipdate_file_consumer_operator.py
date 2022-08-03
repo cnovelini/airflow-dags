@@ -1,4 +1,5 @@
 import json
+from logging import Logger
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 from typing import Dict
@@ -8,7 +9,6 @@ from domain.enumerations.database_insertion_method import DbInsertionMethod
 from domain.enumerations.task_status import TaskStatus
 from domain.enumerations.vendor_code import VendorCode
 from domain.exceptions.razac_exceptions import RazacShipdateInsertionError
-from domain.interfaces.logging import ILogger
 from helpers.skf_controller import SkfController
 from infrastructure.connections.s3_connector import S3Connector
 
@@ -16,7 +16,7 @@ from infrastructure.connections.s3_connector import S3Connector
 class RazacShipdateFileConsumerOperator(BaseOperator):
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         controller: SkfController,
         s3: S3Connector,
         database_client: SQLConnector,

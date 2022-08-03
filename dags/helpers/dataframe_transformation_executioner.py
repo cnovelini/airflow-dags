@@ -1,12 +1,12 @@
+from logging import Logger
 from typing import List
 
 from domain.interfaces.information_transformation import ITransformer, TransformationExecutioner
-from domain.interfaces.logging import ILogger
 from helpers.transformers.dataframe_string_transformer import DataFrameStringTransformer
 
 
 class DataFrameTransformationExecutioner(TransformationExecutioner):
-    def __init__(self, logger: ILogger, target_operations: List[str] = None) -> None:
+    def __init__(self, logger: Logger, target_operations: List[str] = None) -> None:
         super().__init__(logger, target_operations)
 
         self.known_transformers = [DataFrameStringTransformer]

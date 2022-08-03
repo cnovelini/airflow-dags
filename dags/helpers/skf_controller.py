@@ -1,4 +1,5 @@
 from datetime import datetime
+from logging import Logger
 from pytz import timezone
 
 from domain.abstractions.sql_database_connection import SQLConnector
@@ -11,13 +12,12 @@ from domain.constants.queries.control_queries import (
 )
 from domain.enumerations.dag_status import DagStatus
 from domain.enumerations.task_status import TaskStatus
-from domain.interfaces.logging import ILogger
 from infrastructure.connections.s3_connector import S3Connector
 
 
 class SkfController:
     def __init__(
-        self, logger: ILogger, database_client: SQLConnector, s3: S3Connector, xcom_key: str, error_log_folder: str
+        self, logger: Logger, database_client: SQLConnector, s3: S3Connector, xcom_key: str, error_log_folder: str
     ) -> None:
         self.logger = logger
         self.database_client = database_client

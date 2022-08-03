@@ -1,17 +1,17 @@
 import json
+from logging import Logger
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.enumerations.task_status import TaskStatus
-from domain.interfaces.logging import ILogger
 from helpers.skf_controller import SkfController
 
 
 class SqlTableReconstructOperator(BaseOperator):
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         controller: SkfController,
         database_client: SQLConnector,
         table_name: str,

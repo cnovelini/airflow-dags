@@ -1,16 +1,16 @@
 import json
+from logging import Logger
 from airflow import AirflowException
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 
 from domain.enumerations.dag_status import DagStatus
 from domain.exceptions.control_exceptions import UnknownControlActionError
-from domain.interfaces.logging import ILogger
 from helpers.skf_controller import SkfController
 
 
 class ControlOperator(BaseOperator):
-    def __init__(self, logger: ILogger, controller: SkfController, action: str, last_task: str = None, *args, **kwargs):
+    def __init__(self, logger: Logger, controller: SkfController, action: str, last_task: str = None, *args, **kwargs):
         self.logger = logger
         self.controller = controller
         self.action = action

@@ -1,4 +1,5 @@
 """RAZAC SHIPDATE ETL DAG Definition Module."""
+import logging
 from airflow import DAG
 from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
@@ -12,7 +13,6 @@ from helpers.profile_manager import ProfileManager
 from helpers.skf_controller import SkfController
 from infrastructure.connections.postgres_connector import PostgresConnector
 from infrastructure.connections.s3_connector import S3Connector
-from infrastructure.logging.airflow_logger import AirflowLogger
 from operators.control_operator import ControlOperator
 from operators.razac_shipdate_data_backup_operator import RazacShipdateDataBackupOperator
 from operators.razac_shipdate_file_consumer_operator import RazacShipdateFileConsumerOperator
@@ -22,7 +22,7 @@ from operators.sql_to_sql_operator import SqlToSqlOperator
 
 # Global variables (action executioners)
 profile = ProfileManager.get_profile(Profile.PROFILE_001, Environment.STAGE)
-logger = AirflowLogger(profile)
+logger = logging.getLogger(profile.get("logger_name"))
 s3 = S3Connector(
     logger,
     access_key=profile.get("IMPORT_FINANCIAL_RAZAC_DATA_S3_AWS_ACCESS_KEY_ID"),

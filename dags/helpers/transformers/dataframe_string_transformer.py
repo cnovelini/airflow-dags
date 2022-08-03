@@ -1,15 +1,15 @@
+from logging import Logger
 from pandas import DataFrame
 
 from domain.exceptions.runtime_exceptions import DataFrameStringStripError
 from domain.interfaces.information_transformation import ITransformer
-from domain.interfaces.logging import ILogger
 
 
 class DataFrameStringTransformer(ITransformer):
 
     transformation_scopes = ["string"]
 
-    def __init__(self, logger: ILogger) -> None:
+    def __init__(self, logger: Logger) -> None:
         super().__init__(logger)
         self.transformations = [self.apply_strip]
 

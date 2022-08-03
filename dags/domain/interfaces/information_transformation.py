@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
+from logging import Logger
 from typing import List
 
 from pandas import DataFrame
 
 from domain.exceptions.runtime_exceptions import TransformationExecutionError
-from domain.interfaces.logging import ILogger
 
 
 class ITransformer(ABC):
     """Data transformation executioner interface."""
 
     transformation_scopes: List[str] = []
-    logger: ILogger
+    logger: Logger
 
-    def __init__(self, logger: ILogger) -> None:
+    def __init__(self, logger: Logger) -> None:
         self.logger = logger
 
     @abstractmethod
@@ -29,7 +29,7 @@ class ITransformer(ABC):
 class TransformationExecutioner(ABC):
     """Data transformation execution chain interface."""
 
-    def __init__(self, logger: ILogger, target_operations: List[str] = None) -> None:
+    def __init__(self, logger: Logger, target_operations: List[str] = None) -> None:
         self.logger = logger
         self.target_operations = target_operations or ["all"]
 

@@ -1,11 +1,11 @@
 import json
+from logging import Logger
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 
 from domain.enumerations.task_status import TaskStatus
 
 from domain.exceptions.runtime_exceptions import S3FileMoveError
-from domain.interfaces.logging import ILogger
 from helpers.skf_controller import SkfController
 from infrastructure.connections.s3_connector import S3Connector
 
@@ -13,7 +13,7 @@ from infrastructure.connections.s3_connector import S3Connector
 class RazacShipdateDataBackupOperator(BaseOperator):
     def __init__(
         self,
-        logger: ILogger,
+        logger: Logger,
         controller: SkfController,
         s3: S3Connector,
         origin_folder: str,
