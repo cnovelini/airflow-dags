@@ -46,7 +46,7 @@ class RazacShipdateDataBackupOperator(BaseOperator):
 
         try:
             self.logger.info("Recovering processed files information from XCom")
-            files_to_backup = xcom[f"{self.file_info_task}_details"]["processed_files"]
+            files_to_backup = xcom[f"{self.file_info_task}_details"]["processed_lines"]
 
             self.logger.info("Forcing Operator to Succeed (avoiding files backup)")
             action_status = dict(processed=len(files_to_backup), failed=0, errors=[])
