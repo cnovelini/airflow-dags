@@ -131,11 +131,14 @@ class S3Connector(IDatabaseConnector):
         self.logger.info(f"Reading files from S3 bucket {target_bucket} on folder {target_folder}")
         s3_response = self.get_connection().list_objects(Bucket=target_bucket, Prefix=target_folder)
 
-        target_objects = [
-            s3_object["Key"]
-            for s3_object in s3_response["Contents"]
-            if any([extension is not None and s3_object["Key"].endswith(extension), extension is None])
-        ]
+        if "Contents" not in s3_response:
+            target_objects = []
+        else:
+            target_objects = [
+                s3_object["Key"]
+                for s3_object in s3_response["Contents"]
+                if any([extension is not None and s3_object["Key"].endswith(extension), extension is None])
+            ]
 
         return target_objects
 
