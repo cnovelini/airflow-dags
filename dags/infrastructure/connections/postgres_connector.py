@@ -101,6 +101,7 @@ class PostgresConnector(SQLConnector):
         information: DataFrame,
         target_table: str,
         insertion_method: DbInsertionMethod = DbInsertionMethod.FULL_PD_TO_SQL,
+        custom_query: str = None,
     ) -> dict:
         """Insert information on database. Able to execute multiple insertion methods.
 
@@ -129,7 +130,7 @@ class PostgresConnector(SQLConnector):
 
         try:
             self.logger.info("Starting Postgres insertion...")
-            insertion_info = self.insertion_routines[insertion_method](session, information, target_table)
+            insertion_info = self.insertion_routines[insertion_method](session, information, target_table, custom_query)
             self.logger.info("Postgres insertion executed with success!")
 
             return insertion_info
@@ -153,7 +154,7 @@ class PostgresConnector(SQLConnector):
 
         return result
 
-    def __full_insertion(self, session: Session, information: DataFrame, target_table: str) -> dict:
+    def __full_insertion(self, session: Session, information: DataFrame, target_table: str, **kwargs) -> dict:
         """Executes INSERT command using Pandas to_sql interface."""
         self.logger.info("Executing pandas to_sql insertion method")
 
@@ -165,7 +166,7 @@ class PostgresConnector(SQLConnector):
 
         return insertion_info
 
-    def __line_wise_insertion(self, session: Session, information: DataFrame, target_table: str):
+    def __line_wise_insertion(self, session: Session, information: DataFrame, target_table: str, custom_query: str):
         """Executes INSERT command using line-wise insertion method."""
         self.logger.info("Executing line-wise insertion method")
 
@@ -173,9 +174,8 @@ class PostgresConnector(SQLConnector):
 
         for info_row in information.to_dict("records"):
             try:
-                DataFrame(
-                    [{key: value for key, value in info_row.items() if key not in self.internal_control_columns}]
-                ).to_sql(f"public.{target_table}", session.connection(), if_exists="append", index=False)
+                info_row["table_name"] = target_table
+                session.execute(custom_query.format(**info_row))
 
                 insertion_info["processed"] += 1
 

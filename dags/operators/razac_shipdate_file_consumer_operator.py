@@ -22,9 +22,9 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         database_client: SQLConnector,
         target_table_name: str,
         columns_map: Dict[str, str],
-        dtypes: Dict[str, str],
         encoding: str,
         delimiter: str,
+        insertion_query: str,
         last_task: str,
         target_folder: str,
         *args,
@@ -36,7 +36,7 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         self.database_client = database_client
         self.target_table_name = target_table_name
         self.columns_map = columns_map
-        self.dtypes = dtypes
+        self.insertion_query = insertion_query
         self.encoding = encoding
         self.delimiter = delimiter
         self.last_task = last_task
@@ -60,19 +60,23 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
             target_file_path = self.s3.discover_latest_file(target_folder=self.target_folder, extension=".csv")
 
             self.logger.info("Reading target file as pandas DataFrames")
-            target_file_df = self.s3.read_file_as_df(target_file_path, self.encoding, self.delimiter, self.dtypes)
+            target_file_df = self.s3.read_file_as_df(target_file_path, self.encoding, self.delimiter)
             target_file_df = target_file_df.rename(columns=self.columns_map)
             target_file_df["file"] = target_file_path
             target_file_df["line"] = target_file_df.index + 1
 
             self.logger.info("Inserting internal control columns")
-            target_file_df["CTTD_ID"] = task_control_id
-            target_file_df["IMPO_CD_DESPACHANTE"] = int(VendorCode.RAZAC)
+            target_file_df["cttd_id"] = task_control_id
+            target_file_df["impo_cd_despachante"] = int(VendorCode.RAZAC)
 
             self.logger.info("Sending information to SQL database")
             with self.database_client.session_scope() as session:
                 insertion_status = self.database_client.insert_dataframe(
-                    session, target_file_df, self.target_table_name, DbInsertionMethod.LINE_WISE_PD_TO_SQL
+                    session,
+                    target_file_df,
+                    self.target_table_name,
+                    DbInsertionMethod.LINE_WISE_PD_TO_SQL,
+                    custom_query=self.insertion_query,
                 )
                 if insertion_status["failed"] > 0:
                     task_errors = [f"Insertion of {insertion_status['failed']} lines failed."]

@@ -50,6 +50,7 @@ class SQLConnector(IDatabaseConnector):
         information: DataFrame,
         target_table: str,
         insertion_method: DbInsertionMethod = DbInsertionMethod.FULL_PD_TO_SQL,
+        custom_query: str = None,
     ) -> None:
         """Insert information on database. Able to execute multiple insertion methods."""
 
