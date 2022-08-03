@@ -119,7 +119,7 @@ class S3Connector(IDatabaseConnector):
         target_objects = sorted(self.list_bucket_objects(target_bucket, target_folder, extension), reverse=True)
 
         if len(target_objects) == 0:
-            self.logger.log("No file found on target folder")
+            self.logger.info("No file found on target folder")
             raise S3FileNotFoundForExtensionError(target_bucket, target_folder, extension)
 
         self.logger.info(f"Defined latest file: {target_objects[0]}")
