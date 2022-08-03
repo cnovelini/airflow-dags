@@ -175,7 +175,7 @@ class PostgresConnector(SQLConnector):
             try:
                 DataFrame(
                     [{key: value for key, value in info_row.items() if key not in self.internal_control_columns}]
-                ).to_sql(target_table, session.connection(), if_exists="append", index=False)
+                ).to_sql(f"public.{target_table}", session.connection(), if_exists="append", index=False)
 
                 insertion_info["processed"] += 1
 
