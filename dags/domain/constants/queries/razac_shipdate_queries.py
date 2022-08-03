@@ -112,6 +112,6 @@ INSERT INTO "public.{table_name}" (
     '{impo_ds_container_agrupado}',
     '{impo_ds_pos}',
     {cttd_id},
-    {impor_cd_despachante},
+    {impo_cd_despachante},
 )
 """
