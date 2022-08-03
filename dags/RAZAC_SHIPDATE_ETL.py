@@ -1,5 +1,6 @@
 """RAZAC SHIPDATE ETL DAG Definition Module."""
 from airflow import DAG
+from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
 
 from domain.data.razac.tables.shipdate.struct import SHIPDATE_TABLE_STRUCTURE
@@ -159,6 +160,7 @@ with DAG(
         last_task=None,
         task_id="dag_end_failure_control",
         dag=dag,
+        trigger_rule=TriggerRule.ONE_FAILED,
     )
 
     dag_start_control >> stage_table_reconstruction >> s3_to_stage
