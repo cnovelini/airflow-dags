@@ -116,7 +116,7 @@ class S3Connector(IDatabaseConnector):
         target_bucket = target_bucket or self.default_bucket
 
         self.logger.info(f"Reading files from S3 bucket {target_bucket} on folder {target_folder}")
-        s3_response = self.get_connection().list_objects(Bucket=target_bucket, Prefix=target_folder, Delimiter="/")
+        s3_response = self.get_connection().list_objects(Bucket=target_bucket, Prefix=target_folder)
         self.logger.info(f"S3 response: {s3_response}")
 
         self.logger.info("Sorting files in reverse order by it`s key")
