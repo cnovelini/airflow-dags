@@ -52,7 +52,11 @@ class ControlOperator(BaseOperator):
         shared_info = json.loads(task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key))
 
         self.logger.info("Saving DAG end record on database with success status")
-        self.controller.end_dag_control(status=DagStatus.SUCCESS, processed_lines=shared_info.get("processed_lines", 0))
+        self.controller.end_dag_control(
+            status=DagStatus.SUCCESS,
+            dag_control_id=shared_info["dag_control_record_id"],
+            processed_lines=shared_info.get("processed_lines", 0),
+        )
 
     def __execute_dag_failure_end_control(self, context: dict) -> None:
 
@@ -62,4 +66,8 @@ class ControlOperator(BaseOperator):
         shared_info = json.loads(task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key))
 
         self.logger.info("Saving DAG end record on database with failure status")
-        self.controller.end_dag_control(status=DagStatus.FAILED, processed_lines=shared_info.get("processed_lines", 0))
+        self.controller.end_dag_control(
+            status=DagStatus.FAILED,
+            dag_control_id=shared_info["dag_control_record_id"],
+            processed_lines=shared_info.get("processed_lines", 0),
+        )
