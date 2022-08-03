@@ -102,6 +102,7 @@ class PostgresConnector(SQLConnector):
         target_table: str,
         insertion_method: DbInsertionMethod = DbInsertionMethod.FULL_PD_TO_SQL,
         custom_query: str = None,
+        column_types: dict = None,
     ) -> dict:
         """Insert information on database. Able to execute multiple insertion methods.
 
@@ -130,7 +131,9 @@ class PostgresConnector(SQLConnector):
 
         try:
             self.logger.info("Starting Postgres insertion...")
-            insertion_info = self.insertion_routines[insertion_method](session, information, target_table, custom_query)
+            insertion_info = self.insertion_routines[insertion_method](
+                session, information, target_table, custom_query, column_types
+            )
             self.logger.info("Postgres insertion executed with success!")
 
             return insertion_info
@@ -166,7 +169,9 @@ class PostgresConnector(SQLConnector):
 
         return insertion_info
 
-    def __line_wise_insertion(self, session: Session, information: DataFrame, target_table: str, custom_query: str):
+    def __line_wise_insertion(
+        self, session: Session, information: DataFrame, target_table: str, custom_query: str, column_types: dict
+    ):
         """Executes INSERT command using line-wise insertion method."""
         self.logger.info("Executing line-wise insertion method")
 
@@ -177,6 +182,7 @@ class PostgresConnector(SQLConnector):
             try:
                 info_row["table_name"] = target_table
                 info_row = {key: "'NULL'" if str(value) == "nan" else value for key, value in info_row.items()}
+                info_row = {key: column_types[key](value) for key, value in info_row.items() if key in column_types}
                 session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL"))
 
                 insertion_info["processed"] += 1

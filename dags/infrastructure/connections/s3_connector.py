@@ -72,9 +72,7 @@ class S3Connector(IDatabaseConnector):
             self.logger.error(f"Failed to upload information on S3: {error_message}")
             raise S3FileUploadError(error_message)
 
-    def read_file_as_df(
-        self, target_path: str, encoding: str, delimiter: str, dtypes: dict, target_bucket: str = None
-    ) -> DataFrame:
+    def read_file_as_df(self, target_path: str, encoding: str, delimiter: str, target_bucket: str = None) -> DataFrame:
         """Read file from S3 and attempt to transform it on a Pandas DataFrame.
 
         Parameters:
@@ -102,7 +100,7 @@ class S3Connector(IDatabaseConnector):
 
         try:
             self.logger.info("Transforming downloaded CSV file into pandas DataFrame...")
-            file_df = read_csv(StringIO(s3_dump_file.get("Body").read().decode(encoding)), sep=delimiter, dtype=dtypes)
+            file_df = read_csv(StringIO(s3_dump_file.get("Body").read().decode(encoding)), sep=delimiter)
             self.logger.info("CSV to DataFrame transformation executed with success!")
         except Exception as csv_err:
             error_message = f"{type(csv_err).__name__} -> {csv_err}"
