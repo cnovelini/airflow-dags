@@ -103,7 +103,7 @@ class S3Connector(IDatabaseConnector):
 
         try:
             self.logger.info("Transforming downloaded CSV file into pandas DataFrame...")
-            file_df = read_csv(s3_dump_file.get("Body"), encoding=encoding, delimiter=delimiter)
+            file_df = read_csv(s3_dump_file.get("Body").read().decode(encoding), sep=delimiter)
             self.logger.info("CSV to DataFrame transformation executed with success!")
         except Exception as csv_err:
             error_message = f"{type(csv_err).__name__} -> {csv_err}"
