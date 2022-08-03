@@ -22,6 +22,7 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         database_client: SQLConnector,
         target_table_name: str,
         columns_map: Dict[str, str],
+        dtypes: Dict[str, str],
         encoding: str,
         delimiter: str,
         last_task: str,
@@ -35,6 +36,7 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         self.database_client = database_client
         self.target_table_name = target_table_name
         self.columns_map = columns_map
+        self.dtypes = dtypes
         self.encoding = encoding
         self.delimiter = delimiter
         self.last_task = last_task
@@ -58,7 +60,7 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
             target_file_path = self.s3.discover_latest_file(target_folder=self.target_folder, extension=".csv")
 
             self.logger.info("Reading target file as pandas DataFrames")
-            target_file_df = self.s3.read_file_as_df(target_file_path, self.encoding, self.delimiter)
+            target_file_df = self.s3.read_file_as_df(target_file_path, self.encoding, self.delimiter, self.dtypes)
             target_file_df = target_file_df.rename(columns=self.columns_map)
             target_file_df["file"] = target_file_path
             target_file_df["line"] = target_file_df.index + 1

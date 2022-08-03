@@ -5,6 +5,7 @@ from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
 
 from domain.data.razac.tables.shipdate.struct import SHIPDATE_TABLE_STRUCTURE
+from domain.data.razac.tables.shipdate.dtypes import razac_dtypes
 from domain.data.razac.tables.shipdate.transformation_column_map import transformation_column_map
 from domain.enumerations.database_insertion_method import DbInsertionMethod
 from domain.enumerations.environment import Environment
@@ -102,6 +103,7 @@ with DAG(
         database_client=stage_db,
         target_table_name=profile.get("RAZAC_SHIPDATE_STAGE_TABLE_NAME"),
         columns_map=transformation_column_map,
+        dtypes=razac_dtypes,
         encoding=profile.get("RAZAC_SHIPDATE_CSV_ENCODING"),
         delimiter=profile.get("RAZAC_SHIPDATE_CSV_DELIMITER"),
         last_task="stage_table_reconstruction",
