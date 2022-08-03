@@ -59,6 +59,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
 
             self.logger.info("Reading target file as pandas DataFrames")
             target_file_df = self.s3.read_file_as_df(target_file_path, self.encoding, self.delimiter)
+            target_file_df.rename(self.columns_map)
             target_file_df["file"] = target_file_path
             target_file_df["line"] = target_file_df.index + 1
 
