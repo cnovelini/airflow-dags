@@ -149,7 +149,7 @@ with DAG(
     dag_end_success_control = ControlOperator(
         logger=logger,
         controller=skf_controller,
-        action="dag_end",
+        action="dag_end_success_control",
         last_task="backup_s3_files",
         task_id="dag_end_success_control",
         dag=dag,
