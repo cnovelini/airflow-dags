@@ -122,17 +122,17 @@ class PostgresConnector(SQLConnector):
 
             DbInsertionError: Raised when insertion routine failed
         """
+        if insertion_method not in self.insertion_routines:
+            error_message = f"Insertion method not mapped yet: {insertion_method}. Please verify"
+            self.logger.error(error_message)
+            raise UnknownInsertionMethodError(error_message)
+
         try:
             self.logger.info("Starting Postgres insertion...")
             insertion_info = self.insertion_routines[insertion_method](session, information, target_table)
             self.logger.info("Postgres insertion executed with success!")
 
             return insertion_info
-
-        except KeyError:
-            error_message = f"Insertion method not mapped yet: {insertion_method}. Please verify"
-            self.logger.error(error_message)
-            raise UnknownInsertionMethodError(error_message)
 
         except Exception as insert_err:
             error_message = f"{type(insert_err).__name__} -> {insert_err}"
