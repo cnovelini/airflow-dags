@@ -173,7 +173,7 @@ class PostgresConnector(SQLConnector):
 
         for info_row in information.to_dict("records"):
             try:
-                DataFrame(
+                DataFrame.from_records(
                     {key: value for key, value in info_row.items() if key not in self.internal_control_columns}
                 ).to_sql(target_table, session.connection(), if_exists="replace")
 

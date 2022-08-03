@@ -1,4 +1,5 @@
 import json
+from airflow import AirflowException
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
 
@@ -71,3 +72,4 @@ class ControlOperator(BaseOperator):
             dag_control_id=shared_info["dag_control_record_id"],
             processed_lines=shared_info.get("processed_lines", 0),
         )
+        raise AirflowException("DAG failed: some of it`s Tasks have failed. Please verify.")

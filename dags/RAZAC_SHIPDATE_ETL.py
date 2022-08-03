@@ -60,7 +60,7 @@ default_args = {
     "depends_on_past": False,
     "start_date": datetime.now(),
     "email": [profile.get("MANAGER_EMAIL")],
-    "email_on_failure": True,
+    "email_on_failure": False,
     "email_on_retry": False,
     "retries": 0,
     "provide_context": False,
