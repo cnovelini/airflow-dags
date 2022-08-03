@@ -94,7 +94,7 @@ INSERT INTO public.{table_name} (
     {impo_qt_fcl_20},
     {impo_qt_fcl_40},
     '{impo_cd_ctnr_consolidado}',
-    '{impo_nm_lcl}',
+    left('{impo_nm_lcl}', 3),
     {impo_nm_free_time},
     left('{impo_st_recebimento_ohbl}', 2),
     {impo_vl_total_dolar},
