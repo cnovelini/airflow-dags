@@ -1,5 +1,5 @@
 INSERT_INTO_RAZAC_SHIPDATE = """
-INSERT INTO "public.{table_name}" (
+INSERT INTO public.{table_name} (
     impo_id_processo,
     impo_cd_ref_externa,
     impo_sg_pais_embarque,
