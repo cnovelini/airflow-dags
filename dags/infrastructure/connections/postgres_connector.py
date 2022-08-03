@@ -180,6 +180,7 @@ class PostgresConnector(SQLConnector):
                 insertion_info["processed"] += 1
 
             except Exception as insert_err:
+                print(info_row)
                 self.logger.error(f"Error to insert line {info_row['line']}: {insert_err}")
                 insertion_info["failed"] += 1
                 insertion_info["errors"].append(
