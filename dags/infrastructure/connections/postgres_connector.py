@@ -188,7 +188,7 @@ class PostgresConnector(SQLConnector):
                 }
                 info_row["table_name"] = target_table
 
-                session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL"))
+                session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL").replace("'NULL'", "NULL"))
 
                 insertion_info["processed"] += 1
 
