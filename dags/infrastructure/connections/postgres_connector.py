@@ -180,7 +180,7 @@ class PostgresConnector(SQLConnector):
         first_log = True
         for info_row in information.to_dict("records"):
             try:
-                nan_replacement = "'NULL'"
+                nan_replacement = "NULL"
                 info_row = {key: nan_replacement if str(value) == "nan" else value for key, value in info_row.items()}
                 info_row = {
                     key: column_types[key](value) if key in column_types and value != nan_replacement else value
@@ -188,7 +188,7 @@ class PostgresConnector(SQLConnector):
                 }
                 info_row["table_name"] = target_table
 
-                session.execute(custom_query.format(**info_row).replace(nan_replacement, "NULL"))
+                session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL"))
 
                 insertion_info["processed"] += 1
 
