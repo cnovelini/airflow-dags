@@ -57,7 +57,9 @@ class S3FileDownloadError(RuntimeError):
 
 
 class S3FileNotFoundForExtensionError(RuntimeError):
-    pass
+    def __init__(self, target_bucket: str, target_folder: str, extension: str) -> None:
+        message = f"No file was found on {target_bucket}/{target_folder} with the extension informed: {extension}"
+        super().__init__(message)
 
 
 class S3FileToListGenerationError(RuntimeError):
