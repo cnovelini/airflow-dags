@@ -158,7 +158,7 @@ class PostgresConnector(SQLConnector):
         self.logger.info("Executing pandas to_sql insertion method")
 
         try:
-            information.to_sql(target_table, session.connection(), index=False)
+            information.to_sql(target_table, session.connection(), if_exists="append", index=False)
             insertion_info = dict(processed=len(information), failed=0, errors=[])
         except Exception as ex:
             insertion_info = dict(processed=0, failed=len(information), errors=[f"{type(ex).__name__}: {ex}"])
@@ -175,7 +175,7 @@ class PostgresConnector(SQLConnector):
             try:
                 DataFrame(
                     [{key: value for key, value in info_row.items() if key not in self.internal_control_columns}]
-                ).to_sql(target_table, session.connection(), index=False)
+                ).to_sql(target_table, session.connection(), if_exists="append", index=False)
 
                 insertion_info["processed"] += 1
 
