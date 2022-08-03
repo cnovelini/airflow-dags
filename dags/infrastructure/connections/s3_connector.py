@@ -113,18 +113,23 @@ class S3Connector(IDatabaseConnector):
     def discover_latest_file(self, target_folder: str, extension: str, target_bucket: str = None):
         """Search inside target folder for the first file with the informed extension"""
 
-        s3_response = self.get_connection().list_objects_v2(
-            Bucket=(target_bucket or self.default_bucket), Prefix=target_folder, Delimiter="/"
-        )
+        target_bucket = target_bucket or self.default_bucket
 
+        self.logger.info(f"Reading files from S3 bucket {target_bucket} on folder {target_folder}")
+        s3_response = self.get_connection().list_objects_v2(Bucket=target_bucket, Prefix=target_folder, Delimiter="/")
+        self.logger.info(f"S3 response: {s3_response}")
+
+        self.logger.info("Sorting files in reverse order by it`s key")
         target_objects = sorted(
             (s3_object["Key"] for s3_object in s3_response["Contents"] if s3_object["Key"].endswith(extension)),
             reverse=True,
         )
 
         if len(target_objects) == 0:
-            raise S3FileNotFoundForExtensionError((target_bucket or self.default_bucket), target_folder, extension)
+            self.logger.log("No file found on target folder")
+            raise S3FileNotFoundForExtensionError(target_bucket, target_folder, extension)
 
+        self.logger.info(f"Defined latest file: {target_objects[0]}")
         return target_objects[0]
 
     def read_file_as_list(self, target_path: str, target_bucket: str = None) -> List[str]:
