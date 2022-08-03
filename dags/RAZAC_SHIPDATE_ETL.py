@@ -102,6 +102,8 @@ with DAG(
         database_client=stage_db,
         target_table_name=profile.get("RAZAC_SHIPDATE_STAGE_TABLE_NAME"),
         columns_map=transformation_column_map,
+        encoding=profile.get("RAZAC_SHIPDATE_CSV_ENCODING"),
+        delimiter=profile.get("RAZAC_SHIPDATE_CSV_DELIMITER"),
         last_task="stage_table_reconstruction",
         target_folder=profile.get("RAZAC_SHIPDATE_S3_IN_FOLDER"),
         task_id="s3_to_stage",
