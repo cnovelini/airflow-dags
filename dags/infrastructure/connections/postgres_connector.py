@@ -182,7 +182,10 @@ class PostgresConnector(SQLConnector):
             try:
                 info_row["table_name"] = target_table
                 info_row = {key: "'NULL'" if str(value) == "nan" else value for key, value in info_row.items()}
-                info_row = {key: column_types[key](value) for key, value in info_row.items() if key in column_types}
+                info_row = {
+                    key: column_types[key](value) if key in column_types and value != "'NULL'" else value
+                    for key, value in info_row.items()
+                }
                 session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL"))
 
                 insertion_info["processed"] += 1
