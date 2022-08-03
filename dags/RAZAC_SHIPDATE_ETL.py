@@ -15,7 +15,7 @@ from infrastructure.connections.s3_connector import S3Connector
 from infrastructure.logging.airflow_logger import AirflowLogger
 from operators.control_operator import ControlOperator
 from operators.razac_shipdate_data_backup_operator import RazacShipdateDataBackupOperator
-from operators.razac_shipdate_flag_consumer_operator import RazacShipdateFlagConsumerOperator
+from operators.razac_shipdate_file_consumer_operator import RazacShipdateFileConsumerOperator
 from operators.sql_table_reconstruct_operator import SqlTableReconstructOperator
 from operators.sql_to_sql_operator import SqlToSqlOperator
 
@@ -95,7 +95,7 @@ with DAG(
         dag=dag,
     )
 
-    s3_to_stage = RazacShipdateFlagConsumerOperator(
+    s3_to_stage = RazacShipdateFileConsumerOperator(
         logger=logger,
         controller=skf_controller,
         s3=s3,

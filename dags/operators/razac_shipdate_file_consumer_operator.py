@@ -13,7 +13,7 @@ from helpers.skf_controller import SkfController
 from infrastructure.connections.s3_connector import S3Connector
 
 
-class RazacShipdateFlagConsumerOperator(BaseOperator):
+class RazacShipdateFileConsumerOperator(BaseOperator):
     def __init__(
         self,
         logger: ILogger,

@@ -4,7 +4,7 @@ from airflow.models.taskinstance import TaskInstance
 
 from domain.enumerations.task_status import TaskStatus
 
-# from domain.exceptions.runtime_exceptions import S3FileMoveError
+from domain.exceptions.runtime_exceptions import S3FileMoveError
 from domain.interfaces.logging import ILogger
 from helpers.skf_controller import SkfController
 from infrastructure.connections.s3_connector import S3Connector
@@ -45,18 +45,12 @@ class RazacShipdateDataBackupOperator(BaseOperator):
         task_control_id = self.controller.start_task_control(task_instance.task_id, xcom["dag_control_record_id"])
 
         try:
-            self.logger.info("Recovering processed files information from XCom")
-            processed_lines = xcom[f"{self.file_info_task}_details"]["processed_lines"]
+            self.logger.info("Sending all files to backup folder")
+            action_status = self.s3.move_files(self.origin_folder, self.destination_folder)
 
-            self.logger.info("Forcing Operator to Succeed (avoiding files backup)")
-            action_status = dict(processed=processed_lines, failed=0, errors=[])
-
-            # self.logger.info("Sending files to backup folder")
-            # action_status = self.s3.move_files(processed_lines, self.origin_folder, self.destination_folder)
-
-            # if action_status["failed"] > 0:
-            #     task_errors = [f"Backup of {action_status['failed']} files failed."]
-            #     raise S3FileMoveError(action_status["failed"], action_status["errors"])
+            if action_status["failed"] > 0:
+                task_errors = [f"Backup of {action_status['failed']} files failed."]
+                raise S3FileMoveError(action_status["failed"], action_status["errors"])
 
             task_execution_status = TaskStatus.SUCCESS
             processed_files = action_status["processed"]

@@ -9,7 +9,6 @@ from domain.exceptions.runtime_exceptions import (
     S3FileDownloadError,
     S3FileUploadError,
     S3FileNotFoundForExtensionError,
-    S3FileToListGenerationError,
 )
 from domain.interfaces.database_connection import IDatabaseConnector
 from domain.interfaces.logging import ILogger
@@ -117,14 +116,7 @@ class S3Connector(IDatabaseConnector):
 
         target_bucket = target_bucket or self.default_bucket
 
-        self.logger.info(f"Reading files from S3 bucket {target_bucket} on folder {target_folder}")
-        s3_response = self.get_connection().list_objects(Bucket=target_bucket, Prefix=target_folder)
-
-        self.logger.info("Sorting files in reverse order by it`s key")
-        target_objects = sorted(
-            (s3_object["Key"] for s3_object in s3_response["Contents"] if s3_object["Key"].endswith(extension)),
-            reverse=True,
-        )
+        target_objects = sorted(self.list_bucket_objects(target_bucket, target_folder, extension), reverse=True)
 
         if len(target_objects) == 0:
             self.logger.log("No file found on target folder")
@@ -133,33 +125,27 @@ class S3Connector(IDatabaseConnector):
         self.logger.info(f"Defined latest file: {target_objects[0]}")
         return target_objects[0]
 
-    def read_file_as_list(self, target_path: str, target_bucket: str = None) -> List[str]:
-        """Reads a file from S3 and convert the file lines as a list of strings."""
-        try:
-            self.logger.info(f"Recovering {target_path} file from {(target_bucket or self.default_bucket)} bucket...")
-            s3_file = self.get_connection().get_object(Bucket=(target_bucket or self.default_bucket), Key=target_path)
-            self.logger.info("S3 file download executed with success!")
-        except Exception as download_err:
-            error_message = f"{type(download_err).__name__} -> {download_err}"
-            self.logger.error(f"Failed to download information from S3: {error_message}")
-            raise S3FileDownloadError(error_message)
+    def list_bucket_objects(self, target_bucket: str, target_folder: str, extension: str = None):
+        """List all files on bucket inside target folder. Can be filtered by extension"""
 
-        try:
-            self.logger.info("Transforming downloaded file into list of strings...")
-            file_lines = [line.decode("utf-8") for line in s3_file["Body"].iter_lines()]
-            self.logger.info("file transformation executed with success!")
-        except Exception as csv_err:
-            error_message = f"{type(csv_err).__name__} -> {csv_err}"
-            self.logger.error(f"Failed to transform file into list of strings: {error_message}")
-            raise S3FileToListGenerationError(error_message)
+        self.logger.info(f"Reading files from S3 bucket {target_bucket} on folder {target_folder}")
+        s3_response = self.get_connection().list_objects(Bucket=target_bucket, Prefix=target_folder)
 
-        return file_lines
+        target_objects = [
+            s3_object["Key"]
+            for s3_object in s3_response["Contents"]
+            if any([extension is not None and s3_object["Key"].endswith(extension), extension is None])
+        ]
 
-    def move_files(self, all_files: List[str], origin_folder: str, destination_folder: str, bucket: str = None) -> dict:
+        return target_objects
+
+    def move_files(self, origin_folder: str, destination_folder: str, bucket: str = None) -> dict:
         """Move all files between informed folders inside the same bucket."""
 
         move_results = dict(processed=0, failed=0, errors=[], processed_files=[])
         bucket = bucket or self.default_bucket
+
+        all_files = self.list_bucket_objects(bucket, origin_folder)
 
         for file_path in all_files:
             file_name = file_path.split("/")[-1]
