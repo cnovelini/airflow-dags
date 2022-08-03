@@ -89,6 +89,8 @@ class S3Connector(IDatabaseConnector):
             PandasDataFrameGenerationError: Raised when DataFrame generation fails
         """
         try:
+            print(f"encoding={encoding}")
+            print(f"delimiter={delimiter}")
             self.logger.info(f"Recovering {target_path} file from {(target_bucket or self.default_bucket)} bucket...")
             s3_dump_file = self.get_connection().get_object(
                 Bucket=(target_bucket or self.default_bucket), Key=target_path
@@ -117,7 +119,6 @@ class S3Connector(IDatabaseConnector):
 
         self.logger.info(f"Reading files from S3 bucket {target_bucket} on folder {target_folder}")
         s3_response = self.get_connection().list_objects(Bucket=target_bucket, Prefix=target_folder)
-        self.logger.info(f"S3 response: {s3_response}")
 
         self.logger.info("Sorting files in reverse order by it`s key")
         target_objects = sorted(
