@@ -136,7 +136,7 @@ with DAG(
         logger=logger,
         controller=skf_controller,
         s3=s3,
-        origin_folder="shipdate/in/",
+        origin_folder="shipdate/in",
         destination_folder="shipdate/bkp",
         last_task="stage_to_dw",
         file_info_task="s3_to_stage",
