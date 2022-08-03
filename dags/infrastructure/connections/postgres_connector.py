@@ -176,7 +176,7 @@ class PostgresConnector(SQLConnector):
         for info_row in information.to_dict("records"):
             try:
                 info_row["table_name"] = target_table
-                session.execute(custom_query.format(**info_row))
+                session.execute(custom_query.format(**info_row).replace("'nan'", "NULL").replace("nan", "NULL"))
 
                 insertion_info["processed"] += 1
 
