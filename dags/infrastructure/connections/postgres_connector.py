@@ -191,6 +191,6 @@ class PostgresConnector(SQLConnector):
                         ]
                     )
                 )
-                session.refresh()
+                session.rollback()
 
         return insertion_info
