@@ -157,7 +157,7 @@ class PostgresConnector(SQLConnector):
 
         return result
 
-    def __full_insertion(self, session: Session, information: DataFrame, target_table: str, **kwargs) -> dict:
+    def __full_insertion(self, session: Session, information: DataFrame, target_table: str, *args, **kwargs) -> dict:
         """Executes INSERT command using Pandas to_sql interface."""
         self.logger.info("Executing pandas to_sql insertion method")
 
