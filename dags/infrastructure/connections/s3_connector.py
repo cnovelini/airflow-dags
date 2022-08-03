@@ -113,14 +113,12 @@ class S3Connector(IDatabaseConnector):
     def discover_latest_file(self, target_folder: str, extension: str, target_bucket: str = None):
         """Search inside target folder for the first file with the informed extension"""
 
-        bucket_iterator = (
-            self.get_connection()
-            .get_paginator("list_objects_v2")
-            .paginate(Bucket=(target_bucket or self.default_bucket), Prefix=target_folder, Delimiter="/")
+        s3_response = self.get_connection().list_objects_v2(
+            Bucket=(target_bucket or self.default_bucket), Prefix=target_folder, Delimiter="/"
         )
 
         target_objects = sorted(
-            (s3_object["Key"] for s3_object in bucket_iterator.search(f"Contents[?contains(Key, '{extension}')][]")),
+            (s3_object["Key"] for s3_object in s3_response["Contents"] if s3_object["Key"].endswith(extension)),
             reverse=True,
         )
 
