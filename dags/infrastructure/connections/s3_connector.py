@@ -110,21 +110,24 @@ class S3Connector(IDatabaseConnector):
 
         return file_df
 
-    def discover_first_file(self, target_folder: str, extension: str, target_bucket: str = None):
+    def discover_latest_file(self, target_folder: str, extension: str, target_bucket: str = None):
         """Search inside target folder for the first file with the informed extension"""
 
         bucket_iterator = (
             self.get_connection()
             .get_paginator("list_objects_v2")
-            .paginate(Bucket=(target_bucket or self.default_bucket))
+            .paginate(Bucket=(target_bucket or self.default_bucket), Prefix=target_folder, Delimiter="/")
         )
 
-        target_objects = list(bucket_iterator.search(f"Contents[?contains(Key, '{extension}')][]"))
+        target_objects = sorted(
+            (s3_object["Key"] for s3_object in bucket_iterator.search(f"Contents[?contains(Key, '{extension}')][]")),
+            reverse=True,
+        )
 
         if len(target_objects) == 0:
             raise S3FileNotFoundForExtensionError((target_bucket or self.default_bucket), target_folder, extension)
 
-        return "/".join([target_folder, target_objects[0]["Key"]])
+        return target_objects[0]
 
     def read_file_as_list(self, target_path: str, target_bucket: str = None) -> List[str]:
         """Reads a file from S3 and convert the file lines as a list of strings."""

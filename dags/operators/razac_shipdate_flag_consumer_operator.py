@@ -1,7 +1,6 @@
 import json
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
-import pandas as pd
 from typing import Dict
 
 from domain.abstractions.sql_database_connection import SQLConnector
@@ -45,39 +44,28 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
         task_execution_status, task_errors = None, []
         insertion_status = {}
         processed_lines = 0
-        processed_files = []
 
         task_instance: TaskInstance = context["ti"]
         xcom = json.loads(task_instance.xcom_pull(self.last_task, key=self.controller.xcom_key))
         task_control_id = self.controller.start_task_control(task_instance.task_id, xcom["dag_control_record_id"])
 
         try:
-            self.logger.info("Recovering shipdate flag file (txt)")
-            flag_file_path = self.s3.discover_first_file(target_folder=self.target_folder, extension=".txt")
+            self.logger.info("Recovering shipdate latest file")
+            target_file_path = self.s3.discover_latest_file(target_folder=self.target_folder, extension=".csv")
 
-            self.logger.info("Recovering target file names from flag file")
-            flag_file_lines = self.s3.read_file_as_list(flag_file_path)
-
-            self.logger.info("Reading target files as pandas DataFrames")
-            target_files_df_list = []
-            for file_name in flag_file_lines:
-                file_df = self.s3.read_file_as_df("/".join([self.target_folder, file_name]))
-                file_df["file"] = file_name
-                file_df["line"] = file_df.index + 1
-
-                target_files_df_list.append(file_df)
-
-            self.logger.info("Joining all files informed inside flag inside single DataFrame")
-            target_files_df = pd.concat(target_files_df_list)
+            self.logger.info("Reading target file as pandas DataFrames")
+            target_file_df = self.s3.read_file_as_df(target_file_path)
+            target_file_df["file"] = target_file_path
+            target_file_df["line"] = target_file_df.index + 1
 
             self.logger.info("Inserting internal control columns")
-            target_files_df["CTTD_ID"] = task_control_id
-            target_files_df["IMPO_CD_DESPACHANTE"] = int(VendorCode.RAZAC)
+            target_file_df["CTTD_ID"] = task_control_id
+            target_file_df["IMPO_CD_DESPACHANTE"] = int(VendorCode.RAZAC)
 
             self.logger.info("Sending information to SQL database")
             with self.database_client.session_scope() as session:
                 insertion_status = self.database_client.insert_dataframe(
-                    session, target_files_df, self.target_table_name, DbInsertionMethod.LINE_WISE_PD_TO_SQL
+                    session, target_file_df, self.target_table_name, DbInsertionMethod.LINE_WISE_PD_TO_SQL
                 )
                 if insertion_status["failed"] > 0:
                     task_errors = [f"Insertion of {insertion_status['failed']} lines failed."]
@@ -89,7 +77,6 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
 
             task_execution_status = TaskStatus.SUCCESS
             task_errors = []
-            processed_files = [flag_file_path] + flag_file_lines
 
         except RazacShipdateInsertionError as insertion_err:
             self.logger.info("Storing insertion errors on S3")
@@ -114,7 +101,7 @@ class RazacShipdateFlagConsumerOperator(BaseOperator):
                         **xcom,
                         f"{task_instance.task_id}_status": task_execution_status,
                         f"{task_instance.task_id}_errors": task_errors,
-                        f"{task_instance.task_id}_details": dict(processed_files=processed_files),
+                        f"{task_instance.task_id}_details": dict(processed_lines=processed_lines),
                     }
                 ),
             )
