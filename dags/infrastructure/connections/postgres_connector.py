@@ -172,6 +172,7 @@ class PostgresConnector(SQLConnector):
 
         insertion_info = dict(processed=0, failed=0, errors=[])
 
+        first_log = True
         for info_row in information.to_dict("records"):
             try:
                 info_row["table_name"] = target_table
@@ -180,7 +181,9 @@ class PostgresConnector(SQLConnector):
                 insertion_info["processed"] += 1
 
             except Exception as insert_err:
-                print(info_row)
+                if first_log:
+                    print(info_row)
+                    first_log = False
                 self.logger.error(f"Error to insert line {info_row['line']}: {insert_err}")
                 insertion_info["failed"] += 1
                 insertion_info["errors"].append(
