@@ -103,8 +103,7 @@ class PostgresConnector(SQLConnector):
         information: DataFrame,
         target_table: str,
         insertion_method: DbInsertionMethod = DbInsertionMethod.FULL_PD_TO_SQL,
-        custom_query: str = None,
-        column_types: dict = None,
+        index_column: str = None,
     ) -> dict:
         """Insert information on database. Able to execute multiple insertion methods.
 
@@ -133,9 +132,7 @@ class PostgresConnector(SQLConnector):
 
         try:
             self.logger.info("Starting Postgres insertion...")
-            insertion_info = self.insertion_routines[insertion_method](
-                session, information, target_table, custom_query, column_types
-            )
+            insertion_info = self.insertion_routines[insertion_method](session, information, target_table, index_column)
             self.logger.info("Postgres insertion execution ended")
 
             return insertion_info
@@ -171,9 +168,7 @@ class PostgresConnector(SQLConnector):
 
         return insertion_info
 
-    def __line_wise_insertion(
-        self, session: Session, information: DataFrame, target_table: str, custom_query: str, column_types: dict
-    ):
+    def __line_wise_insertion(self, session: Session, information: DataFrame, target_table: str, index_column: str):
         """Executes INSERT command using line-wise insertion method."""
         self.logger.info("Executing line-wise insertion method")
 
@@ -183,8 +178,9 @@ class PostgresConnector(SQLConnector):
         for info_row in information.to_dict("records"):
             try:
                 DataFrame(
-                    {key: value for key, value in info_row.items() if key not in self.internal_control_columns}
-                ).to_sql(target_table, if_exists="append", index=False)
+                    {key: value for key, value in info_row.items() if key not in self.internal_control_columns},
+                    index=index_column,
+                ).to_sql(target_table, if_exists="append")
                 # nan_replacement = "NULL"
                 # info_row = {key: nan_replacement if str(value) == "nan" else value for key, value in info_row.items()}
                 # info_row = {

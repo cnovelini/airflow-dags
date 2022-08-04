@@ -78,8 +78,7 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
                     target_file_df,
                     self.target_table_name,
                     DbInsertionMethod.LINE_WISE_PD_TO_SQL,
-                    custom_query=self.insertion_query,
-                    column_types=self.dtypes,
+                    index_column=list(self.columns_map.keys())[0],
                 )
                 if insertion_status["failed"] > 0:
                     task_error_message = f"Insertion of {insertion_status['failed']} lines failed."
