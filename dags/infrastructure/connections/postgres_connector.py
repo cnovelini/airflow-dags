@@ -182,16 +182,19 @@ class PostgresConnector(SQLConnector):
         first_log = True
         for info_row in information.to_dict("records"):
             try:
-                nan_replacement = "NULL"
-                info_row = {key: nan_replacement if str(value) == "nan" else value for key, value in info_row.items()}
-                info_row = {
-                    key: column_types[key](value) if key in column_types and value != nan_replacement else value
-                    for key, value in info_row.items()
-                }
-                info_row["table_name"] = target_table
+                DataFrame({key: value for key, value in info_row if key not in self.internal_control_columns}).to_sql(
+                    target_table, if_exists="append", index=False
+                )
+                # nan_replacement = "NULL"
+                # info_row = {key: nan_replacement if str(value) == "nan" else value for key, value in info_row.items()}
+                # info_row = {
+                #     key: column_types[key](value) if key in column_types and value != nan_replacement else value
+                #     for key, value in info_row.items()
+                # }
+                # info_row["table_name"] = target_table
 
-                session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL").replace("'NULL'", "NULL"))
-                session.flush()
+                # session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL").replace("'NULL'", "NULL"))
+                # session.flush()
 
                 insertion_info["processed"] += 1
 
