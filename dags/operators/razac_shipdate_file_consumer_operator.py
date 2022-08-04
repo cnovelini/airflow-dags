@@ -2,13 +2,13 @@ import json
 from logging import Logger
 from airflow.models import BaseOperator
 from airflow.models.taskinstance import TaskInstance
-from typing import Dict
 
 from domain.abstractions.sql_database_connection import SQLConnector
 from domain.enumerations.database_insertion_method import DbInsertionMethod
 from domain.enumerations.task_status import TaskStatus
 from domain.enumerations.vendor_code import VendorCode
 from domain.exceptions.razac_exceptions import RazacShipdateInsertionError
+from domain.interfaces.information_transformation import TransformationExecutioner
 from helpers.skf_controller import SkfController
 from infrastructure.connections.s3_connector import S3Connector
 
@@ -21,9 +21,9 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         s3: S3Connector,
         database_client: SQLConnector,
         target_table_name: str,
-        columns_map: Dict[str, str],
         encoding: str,
         delimiter: str,
+        dataframe_transformer: TransformationExecutioner,
         last_task: str,
         target_folder: str,
         **kwargs,
@@ -33,9 +33,9 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         self.s3 = s3
         self.database_client = database_client
         self.target_table_name = target_table_name
-        self.columns_map = columns_map
         self.encoding = encoding
         self.delimiter = delimiter
+        self.dataframe_transformer = dataframe_transformer
         self.last_task = last_task
         self.target_folder = target_folder
 
@@ -59,11 +59,13 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
 
             self.logger.info("Reading target file as pandas DataFrames")
             target_file_df = self.s3.read_file_as_df(target_file_path, self.encoding, self.delimiter)
-            target_file_df = target_file_df.rename(columns=self.columns_map)
-            target_file_df["file"] = file_name
-            target_file_df["line"] = target_file_df.index + 1
+
+            self.logger.info("Executing necessary transformations")
+            target_file_df = self.dataframe_transformer.transform(target_file_df)
 
             self.logger.info("Inserting internal control columns")
+            target_file_df["file"] = file_name
+            target_file_df["line"] = target_file_df.index + 1
             target_file_df["cttd_id"] = task_control_id
             target_file_df["impo_cd_despachante"] = int(VendorCode.RAZAC)
 

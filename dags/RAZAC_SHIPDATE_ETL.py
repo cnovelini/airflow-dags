@@ -5,10 +5,10 @@ from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
 
 from domain.data.razac.tables.shipdate.struct import SHIPDATE_TABLE_STRUCTURE
-from domain.data.razac.tables.shipdate.transformation_column_map import transformation_column_map
 from domain.enumerations.database_insertion_method import DbInsertionMethod
 from domain.enumerations.environment import Environment
 from domain.enumerations.profile import Profile
+from helpers.dataframe_transformation_executioner import DataFrameTransformationExecutioner
 from helpers.profile_manager import ProfileManager
 from helpers.skf_controller import SkfController
 from infrastructure.connections.postgres_connector import PostgresConnector
@@ -105,9 +105,9 @@ with DAG(
         s3=s3,
         database_client=stage_db,
         target_table_name=profile.get("RAZAC_SHIPDATE_STAGE_TABLE_NAME"),
-        columns_map=transformation_column_map,
         encoding=profile.get("RAZAC_SHIPDATE_CSV_ENCODING"),
         delimiter=profile.get("RAZAC_SHIPDATE_CSV_DELIMITER"),
+        dataframe_transformer=DataFrameTransformationExecutioner(logger, target_operations=["razac_shipdate"]),
         last_task="stage_table_reconstruction",
         target_folder=profile.get("RAZAC_SHIPDATE_S3_IN_FOLDER"),
         task_id="s3_to_stage",
