@@ -38,7 +38,7 @@ class RazacShipdateTransformer(ITransformer):
         return information
 
     def __apply_safe_integer_protection(self, information: DataFrame, column_name: str) -> DataFrame:
-        information = information.apply(
-            lambda x: str(x).replace(".0", "") if x.name == column_name and x is not None else x
+        information[column_name] = information[column_name].apply(
+            lambda x: str(x).replace(".0", "") if x is not None else x
         )
         return information
