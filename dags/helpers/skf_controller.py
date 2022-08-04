@@ -108,7 +108,7 @@ class SkfController:
 
             error_info = dict(
                 task_id=task_control_id,
-                error_details=error_message,
+                error_details=error_message.replace("'", '"'),
                 insertion_datetime=datetime.now(tz=self.timezone),
                 insertion_user=self.database_client.current_user,
             )
