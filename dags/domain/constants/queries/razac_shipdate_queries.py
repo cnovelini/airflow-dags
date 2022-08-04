@@ -57,7 +57,7 @@ INSERT INTO public.{table_name} (
     cttd_id,
     impo_cd_despachante
 ) VALUES (
-    {impo_id_processo},
+    '{impo_id_processo}',
     left('{impo_cd_ref_externa}', 30),
     left('{impo_sg_pais_embarque}', 3),
     '{impo_tp_processo}',
