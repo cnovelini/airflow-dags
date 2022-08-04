@@ -88,7 +88,7 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
 
                     self.logger.info("Storing insertion errors on S3")
                     errors_file_path = f"{self.controller.error_log_folder}/{file_name}.log"
-                    self.controller.s3.save_log(path=errors_file_path, errors=insertion_status["errors"])
+                    self.controller.s3.save_log(errors_file_path, insertion_status["errors"])
 
                     raise RazacShipdateInsertionError(insertion_status["failed"], insertion_status["errors"])
 
