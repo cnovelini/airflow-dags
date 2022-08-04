@@ -80,7 +80,7 @@ class SkfController:
 
             creation_result = session.execute(TASK_CONTROL_TABLE_INSERT.format(**create_info))
 
-            new_task_control_id = creation_result.first()[0]
+            new_task_control_id = creation_result.scalar()
             self.logger.info(f"New {task_name} task ID: {new_task_control_id}")
 
             return int(new_task_control_id)
@@ -101,7 +101,7 @@ class SkfController:
             )
 
             result = session.execute(TASK_CONTROL_TABLE_UPDATE.format(**update_info))
-            self.logger.info(f"Task update result: {result.last_updated_params()}")
+            self.logger.info(f"Task update result: {result.mappings().__dict__}")
 
     def inform_task_error(self, task_control_id: int, error_message: str):
         """Store a TASK ERROR record in control table."""
