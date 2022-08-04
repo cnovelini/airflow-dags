@@ -136,7 +136,7 @@ class PostgresConnector(SQLConnector):
             insertion_info = self.insertion_routines[insertion_method](
                 session, information, target_table, custom_query, column_types
             )
-            self.logger.info("Postgres insertion executed with success!")
+            self.logger.info("Postgres insertion execution ended")
 
             return insertion_info
 

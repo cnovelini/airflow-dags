@@ -59,11 +59,12 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         try:
             self.logger.info("Recovering shipdate latest file")
             target_file_path = self.s3.discover_latest_file(target_folder=self.target_folder, extension=".csv")
+            file_name = target_file_path.split("/")[-1]
 
             self.logger.info("Reading target file as pandas DataFrames")
             target_file_df = self.s3.read_file_as_df(target_file_path, self.encoding, self.delimiter)
             target_file_df = target_file_df.rename(columns=self.columns_map)
-            target_file_df["file"] = target_file_path
+            target_file_df["file"] = file_name
             target_file_df["line"] = target_file_df.index + 1
 
             self.logger.info("Inserting internal control columns")
@@ -81,20 +82,20 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
                     column_types=self.dtypes,
                 )
                 if insertion_status["failed"] > 0:
-                    task_errors = [f"Insertion of {insertion_status['failed']} lines failed."]
+                    task_error_message = f"Insertion of {insertion_status['failed']} lines failed."
+                    self.logger.info(task_error_message)
+                    task_errors.append(task_error_message)
+
+                    self.logger.info("Storing insertion errors on S3")
+                    errors_file_path = f"{self.controller.error_log_folder}/{file_name}.log"
+                    self.controller.s3.save_log(path=errors_file_path, errors=insertion_status["errors"])
+
                     raise RazacShipdateInsertionError(insertion_status["failed"], insertion_status["errors"])
 
                 processed_lines = insertion_status["processed"]
 
-            self.logger.info("Updating XCom with processed information")
-
             task_execution_status = TaskStatus.SUCCESS
             task_errors = []
-
-        except RazacShipdateInsertionError as insertion_err:
-            self.logger.info("Storing insertion errors on S3")
-            errors_file_path = "/".join([self.controller.error_log_folder, f"{task_instance.dag_id}_errors.log"])
-            self.controller.s3.save_log(path=errors_file_path, errors=insertion_err.errors)
 
         except Exception as ex:
             self.logger.info("Sending failure information to error control table")
