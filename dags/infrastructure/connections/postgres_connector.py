@@ -205,7 +205,7 @@ class PostgresConnector(SQLConnector):
                 self.logger.error(f"Error to insert line {info_row['line']}")
                 insertion_info["failed"] += 1
                 insertion_info["errors"].append(
-                    " ".join(
+                    "\n".join(
                         [
                             f"File: {info_row['file']};",
                             f"Row: {info_row['line']};",
