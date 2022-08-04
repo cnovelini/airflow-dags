@@ -28,8 +28,7 @@ class RazacShipdateTransformer(ITransformer):
 
     def change_column_types(self, information: DataFrame) -> DataFrame:
         self.logger.info("Adjusting columns corrupted by NAN values")
-        self.logger.info(information.columns)
         for column_name, new_type in razac_shipdate_types.items():
-            information.loc[column_name] = information.loc[column_name].astype(new_type)
+            information[column_name] = information[column_name].astype(new_type)
 
         return information
