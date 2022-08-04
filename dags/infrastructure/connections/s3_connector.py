@@ -171,7 +171,7 @@ class S3Connector(IDatabaseConnector):
     def save_log(self, log_file_path, information: List[str], bucket: str = None) -> None:
         """Saves a log file with the information provided."""
 
-        log_info_stream = StringIO(newline="\n\n")
+        log_info_stream = StringIO()
         for info_line in information:
             log_info_stream.write(info_line)
 

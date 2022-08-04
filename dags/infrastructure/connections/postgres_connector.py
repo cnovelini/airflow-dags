@@ -207,9 +207,12 @@ class PostgresConnector(SQLConnector):
                 insertion_info["errors"].append(
                     "\n".join(
                         [
+                            "*" * 50,
                             f"File: {info_row['file']};",
                             f"Row: {info_row['line']};",
                             f"Error: {type(insert_err).__name__} -> {insert_err}",
+                            "*" * 50,
+                            "\n",
                         ]
                     )
                 )
