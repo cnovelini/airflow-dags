@@ -178,8 +178,8 @@ class PostgresConnector(SQLConnector):
         for info_row in information.to_dict("records"):
             try:
                 DataFrame(
-                    {key: value for key, value in info_row.items() if key not in self.internal_control_columns},
-                    index=[index_column],
+                    [{key: value for key, value in info_row.items() if key not in self.internal_control_columns}],
+                    index=index_column,
                 ).to_sql(target_table, if_exists="append")
                 # nan_replacement = "NULL"
                 # info_row = {key: nan_replacement if str(value) == "nan" else value for key, value in info_row.items()}
