@@ -199,7 +199,7 @@ class PostgresConnector(SQLConnector):
                 if first_log:
                     print(info_row)
                     first_log = False
-                self.logger.error(f"Error to insert line {info_row['line']}: {insert_err}")
+                self.logger.error(f"Error to insert line {info_row['line']}")
                 insertion_info["failed"] += 1
                 insertion_info["errors"].append(
                     " ".join(
