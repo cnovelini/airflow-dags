@@ -53,7 +53,11 @@ dw = PostgresConnector(
     current_user=profile.get("ODW_AIRFLOW_USERNAME"),
 )
 skf_controller = SkfController(
-    logger, stage_db, s3, xcom_key="razac_shipdate_shared_data", error_log_folder="shipdate/err"
+    logger,
+    stage_db,
+    s3,
+    xcom_key="razac_shipdate_shared_data",
+    error_log_folder=profile.get("RAZAC_SHIPDATE_S3_ERR_FOLDER"),
 )
 
 # Defining main DAG's config
