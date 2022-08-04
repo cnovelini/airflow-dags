@@ -180,7 +180,7 @@ class PostgresConnector(SQLConnector):
                 DataFrame(
                     [{key: value for key, value in info_row.items() if key not in self.internal_control_columns}],
                     index=index_column,
-                ).to_sql(target_table, if_exists="append")
+                ).to_sql(target_table, session.connection(), if_exists="append")
                 # nan_replacement = "NULL"
                 # info_row = {key: nan_replacement if str(value) == "nan" else value for key, value in info_row.items()}
                 # info_row = {
