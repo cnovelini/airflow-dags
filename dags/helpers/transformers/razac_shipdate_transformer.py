@@ -1,4 +1,5 @@
 from logging import Logger
+from numpy import nan
 from pandas import DataFrame
 
 from domain.data.razac.tables.shipdate.transformation_column_map import transformation_column_map
@@ -39,6 +40,6 @@ class RazacShipdateTransformer(ITransformer):
 
     def __apply_safe_integer_protection(self, information: DataFrame, column_name: str) -> DataFrame:
         information[column_name] = information[column_name].map(
-            lambda x: str(x).replace(".0", "") if x is not None else x
+            lambda x: str(x).replace(".0", "") if x not in [None, nan] else x
         )
         return information
