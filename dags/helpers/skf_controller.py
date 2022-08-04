@@ -101,6 +101,7 @@ class SkfController:
             )
 
             result = session.execute(TASK_CONTROL_TABLE_UPDATE.format(**update_info))
+            session.commit()
             self.logger.info(f"Task update result: {result.mappings().__dict__}")
 
     def inform_task_error(self, task_control_id: int, error_message: str):
