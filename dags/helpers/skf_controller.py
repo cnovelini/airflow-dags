@@ -80,8 +80,9 @@ class SkfController:
 
             creation_result = session.execute(TASK_CONTROL_TABLE_INSERT.format(**create_info))
 
-            new_task_control_id = list(creation_result)[0][0]
-            print(f"New_task_id: {new_task_control_id}")
+            new_task_control_id = creation_result.first()[0]
+            self.logger.info(f"New {task_name} task ID: {new_task_control_id}")
+
             return int(new_task_control_id)
 
     def end_task_control(self, task_control_id: int, status: DagStatus, processed_lines: int):
