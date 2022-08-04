@@ -41,3 +41,4 @@ class RazacShipdateTransformer(ITransformer):
         information = information.apply(
             lambda x: str(x).replace(".0", "") if x.name == column_name and x is not None else x
         )
+        return information
