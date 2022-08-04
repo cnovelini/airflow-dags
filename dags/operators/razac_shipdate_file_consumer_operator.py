@@ -24,8 +24,6 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         columns_map: Dict[str, str],
         encoding: str,
         delimiter: str,
-        dtypes: dict,
-        insertion_query: str,
         last_task: str,
         target_folder: str,
         **kwargs,
@@ -36,8 +34,6 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
         self.database_client = database_client
         self.target_table_name = target_table_name
         self.columns_map = columns_map
-        self.dtypes = dtypes
-        self.insertion_query = insertion_query
         self.encoding = encoding
         self.delimiter = delimiter
         self.last_task = last_task
@@ -78,7 +74,6 @@ class RazacShipdateFileConsumerOperator(BaseOperator):
                     target_file_df,
                     self.target_table_name,
                     DbInsertionMethod.LINE_WISE_PD_TO_SQL,
-                    index_column=list(self.columns_map.keys())[0],
                 )
                 if insertion_status["failed"] > 0:
                     task_error_message = f"Insertion of {insertion_status['failed']} lines failed."

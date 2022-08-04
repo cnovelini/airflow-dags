@@ -4,8 +4,6 @@ from airflow import DAG
 from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime, timedelta
 
-from domain.constants.queries.razac_shipdate_queries import INSERT_INTO_RAZAC_SHIPDATE
-from domain.data.razac.tables.shipdate.dtypes import razac_dtypes
 from domain.data.razac.tables.shipdate.struct import SHIPDATE_TABLE_STRUCTURE
 from domain.data.razac.tables.shipdate.transformation_column_map import transformation_column_map
 from domain.enumerations.database_insertion_method import DbInsertionMethod
@@ -110,8 +108,6 @@ with DAG(
         columns_map=transformation_column_map,
         encoding=profile.get("RAZAC_SHIPDATE_CSV_ENCODING"),
         delimiter=profile.get("RAZAC_SHIPDATE_CSV_DELIMITER"),
-        dtypes=razac_dtypes,
-        insertion_query=INSERT_INTO_RAZAC_SHIPDATE,
         last_task="stage_table_reconstruction",
         target_folder=profile.get("RAZAC_SHIPDATE_S3_IN_FOLDER"),
         task_id="s3_to_stage",
