@@ -41,8 +41,9 @@ class SkfController:
             )
 
             creation_result = session.execute(DAG_CONTROL_TABLE_INSERT.format(**create_info))
-
-            new_dag_control_id = list(creation_result)[0][0]
+            new_dag_control_id = creation_result.scalar()
+            self.logger.info(f"New {dag_name} task ID: {new_dag_control_id}")
+            session.flush()
 
             return int(new_dag_control_id)
 
@@ -62,6 +63,7 @@ class SkfController:
             )
 
             session.execute(DAG_CONTROL_TABLE_UPDATE.format(**update_info))
+            session.flush()
 
     def start_task_control(self, task_name: str, dag_control_id: int, status: TaskStatus = TaskStatus.STARTED) -> int:
         """Store a TASK start record in control table."""
@@ -79,9 +81,9 @@ class SkfController:
             )
 
             creation_result = session.execute(TASK_CONTROL_TABLE_INSERT.format(**create_info))
-
             new_task_control_id = creation_result.scalar()
             self.logger.info(f"New {task_name} task ID: {new_task_control_id}")
+            session.flush()
 
             return int(new_task_control_id)
 
@@ -100,9 +102,8 @@ class SkfController:
                 update_user=self.database_client.current_user,
             )
 
-            result = session.execute(TASK_CONTROL_TABLE_UPDATE.format(**update_info))
-            session.commit()
-            self.logger.info(f"Task update result: {result.mappings().__dict__}")
+            session.execute(TASK_CONTROL_TABLE_UPDATE.format(**update_info))
+            session.flush()
 
     def inform_task_error(self, task_control_id: int, error_message: str):
         """Store a TASK ERROR record in control table."""
@@ -116,3 +117,4 @@ class SkfController:
             )
 
             session.execute(TASK_ERROR_TABLE_INSERT.format(**error_info))
+            session.flush()

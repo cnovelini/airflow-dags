@@ -62,6 +62,7 @@ class PostgresConnector(SQLConnector):
         try:
             self.logger.info("Starting Postgres table drop...")
             session.execute(DROP_TABLE.format(target_table))
+            session.flush()
             self.logger.info("Postgres table drop executed with success!")
 
         except Exception as create_err:
@@ -88,6 +89,7 @@ class PostgresConnector(SQLConnector):
         try:
             self.logger.info("Starting Postgres table creation...")
             session.execute(CREATE_TABLE.format(target_table, table_column_structure))
+            session.flush()
             self.logger.info("Postgres table creation executed with success!")
 
         except Exception as create_err:
@@ -189,6 +191,7 @@ class PostgresConnector(SQLConnector):
                 info_row["table_name"] = target_table
 
                 session.execute(custom_query.format(**info_row).replace("'NULL'", "NULL").replace("'NULL'", "NULL"))
+                session.flush()
 
                 insertion_info["processed"] += 1
 
