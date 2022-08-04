@@ -100,7 +100,7 @@ class SkfController:
             )
 
             result = session.execute(TASK_CONTROL_TABLE_UPDATE.format(**update_info))
-            self.logger.info(f"Task update result: {result}")
+            self.logger.info(f"Task update result: {result.last_updated_params()}")
 
     def inform_task_error(self, task_control_id: int, error_message: str):
         """Store a TASK ERROR record in control table."""
