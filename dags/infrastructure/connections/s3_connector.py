@@ -135,7 +135,10 @@ class S3Connector(IDatabaseConnector):
             target_objects = [
                 s3_object["Key"]
                 for s3_object in s3_response["Contents"]
-                if any([extension is not None and s3_object["Key"].endswith(extension), extension is None])
+                if (
+                    any([extension is not None and s3_object["Key"].endswith(extension), extension is None])
+                    and s3_object["key"] != f"{target_folder}/"
+                )
             ]
 
         return target_objects
