@@ -182,9 +182,9 @@ class PostgresConnector(SQLConnector):
         first_log = True
         for info_row in information.to_dict("records"):
             try:
-                DataFrame({key: value for key, value in info_row if key not in self.internal_control_columns}).to_sql(
-                    target_table, if_exists="append", index=False
-                )
+                DataFrame(
+                    {key: value for key, value in info_row.items() if key not in self.internal_control_columns}
+                ).to_sql(target_table, if_exists="append", index=False)
                 # nan_replacement = "NULL"
                 # info_row = {key: nan_replacement if str(value) == "nan" else value for key, value in info_row.items()}
                 # info_row = {
