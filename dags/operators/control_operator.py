@@ -56,7 +56,7 @@ class ControlOperator(BaseOperator):
         self.controller.end_dag_control(
             status=DagStatus.SUCCESS,
             dag_control_id=shared_info["dag_control_record_id"],
-            processed_lines=shared_info.get("processed_lines", 0),
+            processed_lines=shared_info["stage_to_dw_details"]["processed_lines"],
         )
 
     def __execute_dag_failure_end_control(self, context: dict) -> None:
@@ -70,6 +70,6 @@ class ControlOperator(BaseOperator):
         self.controller.end_dag_control(
             status=DagStatus.FAILED,
             dag_control_id=shared_info["dag_control_record_id"],
-            processed_lines=shared_info.get("processed_lines", 0),
+            processed_lines=0,
         )
         raise AirflowException("DAG failed: some of it`s Tasks have failed. Please verify.")
