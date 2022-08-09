@@ -5,7 +5,7 @@ Base = declarative_base()
 
 
 class TaskErrorRecord(Base):
-    __tablename__ = "CONTROLE_TRANSACAO_ERRO"
+    __tablename__ = "ctr_control_transaction_error"
     CTTE_ID = Column(Integer, primary_key=True)
     CTTE_DT_INSERT = Column(DateTime)
     CTTE_USER_INSERT = Column(String)

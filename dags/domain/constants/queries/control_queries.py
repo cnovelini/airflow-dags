@@ -1,5 +1,5 @@
 DAG_CONTROL_TABLE_INSERT = """
-INSERT INTO CONTROLE_TRANSACAO (
+INSERT INTO ctr_control_transaction (
     CTTR_NM,
     CTTR_ST,
     CTTR_HR_DT_START_PROCESS,
@@ -17,7 +17,7 @@ RETURNING CTTR_ID
 """
 
 DAG_CONTROL_TABLE_UPDATE = """
-UPDATE CONTROLE_TRANSACAO
+UPDATE ctr_control_transaction
 SET
     CTTR_ST = {status},
     CTTR_HR_DT_END_PROCESS = '{process_end_datetime}',
@@ -32,14 +32,14 @@ DAG_CONTROL_TABLE_SELECT_LAST_ID = """
 SELECT
     CTTR_ID
 FROM
-    CONTROLE_TRANSACAO
+    ctr_control_transaction
 ORDER BY
     CTTR_ID DESC
 LIMIT 1
 """
 
 TASK_CONTROL_TABLE_INSERT = """
-INSERT INTO CONTROLE_TRANSACAO_DETALHE (
+INSERT INTO ctr_control_transaction_detail (
     CTTR_ID,
     CTTD_NM,
     CTTD_ST,
@@ -59,7 +59,7 @@ RETURNING CTTR_ID
 """
 
 TASK_CONTROL_TABLE_UPDATE = """
-UPDATE CONTROLE_TRANSACAO_DETALHE
+UPDATE ctr_control_transaction_detail
 SET
     CTTD_ST = {status},
     CTTD_HR_DT_END_TRANSACTION = '{transaction_end_datetime}',
@@ -74,14 +74,14 @@ TASK_CONTROL_TABLE_SELECT_LAST_ID = """
 SELECT
     CTTD_ID
 FROM
-    CONTROLE_TRANSACAO_DETALHE
+    ctr_control_transaction_detail
 ORDER BY
     CTTD_ID DESC
 LIMIT 1
 """
 
 TASK_ERROR_TABLE_INSERT = """
-INSERT INTO CONTROLE_TRANSACAO_ERRO (
+INSERT INTO ctr_control_transaction_error (
     CTTD_ID,
     CTTE_DS,
     CTTE_DT_INSERT,

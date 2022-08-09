@@ -22,7 +22,7 @@ from operators.sql_to_sql_operator import SqlToSqlOperator
 
 # Global variables (action executioners)
 profile = ProfileManager.get_profile(Profile.PROFILE_001, Environment.STAGE)
-logger = logging.getLogger("LOGGER")
+logger = logging.getLogger(profile.get("logger_name"))
 s3 = S3Connector(
     logger,
     access_key=profile.get("IMPORT_FINANCIAL_RAZAC_DATA_S3_AWS_ACCESS_KEY_ID"),

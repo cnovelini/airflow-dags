@@ -1,4 +1,4 @@
-CREATE TABLE controle_transacao (
+CREATE TABLE ctr_control_transaction (
    CTTR_ID SERIAL PRIMARY key NOT NULL,
    CTTR_NM VARCHAR(50) NOT NULL,
    CTTR_ST NUMERIC(1) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE controle_transacao (
    CTTR_USER_DELETE VARCHAR(30)
 );
 
-CREATE TABLE controle_transacao_detalhe (
+CREATE TABLE ctr_control_transaction_detail (
    CTTD_ID SERIAL PRIMARY KEY NOT NULL,
    CTTR_ID NUMERIC(10) NOT NULL,
    CTTD_NM VARCHAR(50),
@@ -27,12 +27,10 @@ CREATE TABLE controle_transacao_detalhe (
    CTTD_USER_UPDATE VARCHAR(30),
    CTTD_DT_DELETE DATE,
    CTTD_USER_DELETE VARCHAR(30),
-   CONSTRAINT fk_controle_transacao
-      FOREIGN KEY(CTTR_ID)
-	  REFERENCES controle_transacao(CTTR_ID)
+   CONSTRAINT fk_controle_transacao FOREIGN KEY(CTTR_ID) REFERENCES ctr_control_transaction(CTTR_ID)
 );
 
-CREATE TABLE controle_transacao_erro (
+CREATE TABLE ctr_control_transaction_error (
    CTTE_ID SERIAL PRIMARY KEY NOT NULL,
    CTTE_DS VARCHAR(200),
    CTTE_DT_INSERT DATE NOT NULL,
@@ -42,7 +40,5 @@ CREATE TABLE controle_transacao_erro (
    CTTE_DT_DELETE DATE,
    CTTE_USER_DELETE VARCHAR(30),
    CTTD_ID INTEGER,
-   CONSTRAINT fk_controle_transacao_detalhe
-      FOREIGN KEY(CTTD_ID)
-	  REFERENCES controle_transacao_detalhe(CTTD_ID)
+   CONSTRAINT fk_controle_transacao_detalhe FOREIGN KEY(CTTD_ID) REFERENCES ctr_control_transaction_detail(CTTD_ID)
 );
